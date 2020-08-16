@@ -1,0 +1,184 @@
+p, span, h1, h2, h3, h4, button, label {
+    color: white;
+    font-family: Merriweather,sans-serif;
+}
+
+.statsWrapper {
+    margin: 0 auto;
+    width: 80vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+@media screen and (max-width: 900px) {
+.statsWrapper {
+    width: 100vw;
+}
+
+.statsWrapper div {
+    padding: 10px;
+}
+
+}
+
+.statsWrapper div {
+    margin: 0 auto;
+}
+
+.statsWrapper div table {
+    margin: 0 auto;
+}
+
+p, span {
+    font-size: 1.2rem;
+}
+
+a {
+    color: #add8e6; 
+}
+
+a:link {
+    text-decoration: none;
+}
+
+body {
+    background-color: #212121;
+    text-decoration: none;
+}
+
+.introText {
+    text-align: left;
+    margin: 0 auto;
+    width: 75vw;
+}
+
+.strongText {
+    font-size: 1.9rem;
+}
+
+.main {
+    margin-top: 25px;
+}
+
+.login {
+    width: 25vw;
+}
+
+#progress {
+    margin: 0 auto;
+    width: 75vw;
+    background-color: grey;
+}
+  
+#progressBar {
+    width: 0%;
+    height: 30px;
+    background-color: green;
+}
+
+input {
+    background-color: #c9c9c9;
+    margin-right: 10px;
+    
+}
+
+button {
+    background-color: black;
+    display: inline-block;
+    border: 0.1em solid #FFFFFF;
+    margin:0 0.3em 0.3em 0;
+    border-radius:0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #FFFFFF;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+
+
+.disabled {
+    pointer-events: none;
+    background-color: #2E2E2E;
+}
+
+
+
+.button1:hover {
+    background-color: #2E2E2E;
+   
+}
+
+table {
+    margin: 0 auto;
+}
+
+td {
+    vertical-align: middle;
+}
+
+tr {
+    margin-bottom: 10px;
+}
+
+.badgeGrid {
+    margin: 0 auto;
+    width: 70vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+}
+
+.leaderboard, .leaderboard tr td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+
+}
+
+
+
+.badgeGrid div {
+    border-style: solid;
+    padding: 15px;
+}
+
+.small {
+
+    font-size: 1rem;
+}
+
+.badgeDescription {
+    font-style: italic;
+    font-size: 1.1rem;
+
+}
+
+.nextBadge {
+    opacity: .3
+}
+
+@media screen and (max-width: 800px) {
+
+    .badgeGrid {
+        width: 95vw;
+        grid-template-columns: 1fr 1fr;
+    
+    }
+    
+
+    .login {
+        width: 90vw;
+    }
+
+    .button1 {
+        display: block;
+        margin: 0.2em auto;
+    }
+
+
+
+  }
+
+
+  
