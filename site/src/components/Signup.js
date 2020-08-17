@@ -43,7 +43,8 @@ class Signup extends React.Component {
       <div className="App">
         <div className="introText">
           <br/><br/>
-          <p>Skate the Bay is a virtual skate marathon hosted by <a href="https://rrderby.org" target="_new">Resurrection Roller Derby</a>, open to skaters everywhere. This marathon started
+          <p>*TEST TEST TEST* 
+            Skate the Bay is a virtual skate marathon hosted by <a href="https://rrderby.org" target="_new">Resurrection Roller Derby</a>, open to skaters everywhere. This marathon started
           May 10th, 2020.
           The route comes in three types.
           <br/>
