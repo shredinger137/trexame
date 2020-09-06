@@ -1,12 +1,17 @@
-var mongo = require("mongodb");
 var express = require("express");
 var app = express();
-var allowedOrigins = ["https://marathon.rrderby.org", "http://marathon.rrderby.org", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
-var mongourl = "mongodb://localhost:27017";
 var nodemailer = require("nodemailer");
 var config = require("./config.js");
 var cron = require("node-cron");
 var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Server;
+var emailFunctions = require('./emailFunctions');
+const dbFunctions = require("./dbFunctions.js");
+var jwt = require('jsonwebtoken');
+var passwordHash = require('password-hash');
+
+const secret = "temp"; //TODO: this changes to a config thing later
+var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
+
 
 //Create a global holder for our database instance, then open the database and assign it here.
 //Note that anywhere you use this, you need to have an if(dbConnection){} conditional so that the
@@ -16,9 +21,9 @@ var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Se
 var dbConnection = null;
 MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true }, function (err, client) {
     if (err) { console.error(err) }
-    dbConnection = client.db('marathon') // once connected, assign the connection to the global variable
+    dbConnection = client.db(config.globalDbName) // once connected, assign the connection to the global variable
     connectedToDatabase = true;
-    console.log("Connected to Database");
+    console.log("Connected to database " + config.globalDbName);
 
     //things that happen on startup should happen here, after the database connects
 
@@ -34,16 +39,6 @@ cron.schedule("* * * * *", () => {
     createListOfCompleted();
 });
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: config.emailUsername,
-        pass: config.emailPass
-    }
-});
-
-
-
 
 //*****************
 //Express Routes
@@ -57,23 +52,104 @@ app.get("/signup", function (req, res) {
     res.setHeader("Content-Type", "text/plain");
 
     if (req && req.query && req.query.email) {
-        var userEmail = req.query.email;
-        var userDisplayName = req.query.name;
-        var marathonSelection = req.query.marathon;
-        var id = Math.random().toString(36).slice(2);
-        checkUserData(id, userEmail).then(checkResult => {
-            if (checkResult == true) {
-                addNewUserToDatabase(userEmail, userDisplayName, marathonSelection, id);
-                var content = createWelcomeEmail(id);
-                sendEmailToUser(userEmail, "Welcome to Skate the Bay", content);
-                res.send(id);
+        console.log("signing up " + req.query.name + ", " + req.query.email + ", " + req.query.password);
+        var emailAddress = req.query.email;
+        var name = req.query.name;
+        var password = req.query.password;
+        dbFunctions.checkIfUserExists(emailAddress).then(result => {
+            if (result == true) {
+                dbFunctions.getNewId().then(id => {
+                    dbFunctions.createUserAccount(name, password, emailAddress, id);
+                    res.send(true);
+                })
+            } else {
+                res.send("emailInUse");
             }
-            else {
-                res.send("oop");
-            }
-        })
+        }
+        )
+        }
+        else {
+            res.send("oop");
+        }
+    });
+
+app.get("/login", function (req, res) {
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
     }
-});
+    else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+
+    res.setHeader("Content-Type", "text/plain");
+    res.header('Access-Control-Allow-Credentials', true)
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    )
+
+    var email, password
+
+    if (req.query.email && req.query.password) {
+        email = req.query.email;
+        password = req.query.password;
+    } else {
+        res.send({ result: "invalidSubmission" });
+        return;
+    }
+
+    dbFunctions.checkLogin(email, password).then(checkLoginResult => {
+        if (checkLoginResult && checkLoginResult[0] && checkLoginResult[1]) {
+            console.log(checkLoginResult);
+            if (checkLoginResult[0] == true) {
+                const payload = { username: checkLoginResult[1], id: checkLoginResult[2] };
+                const token = jwt.sign(payload, secret, {
+                    expiresIn: '14d'
+                })
+                res.cookie('token', token, { httpOnly: false }).send({ result: "validLogin" });
+                return;
+            } else {
+
+                if (checkLoginResult[1] == 100) {
+                    res.send({ result: "notFound" });
+                    return;
+                }
+
+                if (checkLoginResult[1] == 150) {
+                    res.send({ result: "badPassword" });
+                    return;
+                }
+            }
+
+        } else {
+            res.send({ result: "error" });
+        }
+    }
+
+    )
+
+
+
+}
+)
+
+app.get("/verifytoken", function (req, res) {
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+    res.setHeader("Content-Type", "text/plain");
+
+    var token = req.query.token;
+    jwt.verify(token, secret, function (err, decoded) {
+        if (err) {
+            res.send("Invalid");
+        } else {
+            res.send("Valid");
+        }
+    });
+})
 
 app.get("/userdata", function (req, res) {
 
@@ -107,42 +183,6 @@ app.get("/getallusers", function (req, res) {
 });
 
 
-app.get("/completed", function (req, res) {
-
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "text/plain");
-
-    dbConnection.collection("users").find({ totalDistance: { $gte: 155 } }, { projection: { _id: 0, name: 1, email: 1, totalDistance: 1 } }).toArray(function (err, result) {
-        if (err) throw err;
-        else {
-            res.send(result);
-        }
-    }
-    );
-
-});
-
-app.get("/resend", function (req, res) {
-
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "text/plain");
-
-    if (req && req.query && req.query.email) {
-        var email = req.query.email;
-        if (dbConnection) {
-            dbo.collection("users").findOne({ email: email }, function (err, result) {
-                if (err) throw err;
-                else {
-                    var content = createWelcomeEmail(result.ID);
-                    sendEmailToUser(email, "Skate the Bay Dashboard Link", content);
-                    res.send(result.ID);
-                }
-            }
-
-            );
-        }
-    } else { res.send("Invalid query"); }
-});
 
 app.get("/updatemarathon", function (req, res) {
 
@@ -257,7 +297,7 @@ async function createListOfCompleted() {
 
     if (dbConnection) {
 
-        var completedUsers = await dbConnection.collection("users").find({ allowPublic: "true", totalDistance: { $gte: 155 }  }, { projection: { _id: 0, name: 1, totalDistance: 1 } }).toArray();
+        var completedUsers = await dbConnection.collection("users").find({ allowPublic: "true", totalDistance: { $gte: 155 } }, { projection: { _id: 0, name: 1, totalDistance: 1 } }).toArray();
 
         dbConnection.collection("stats").updateOne({ name: "completedFull" }, { $set: { completedFullMarathon: completedUsers } }, { upsert: true }, function (err, result) {
             if (err) throw err;
@@ -362,23 +402,6 @@ function createWelcomeEmail(id) {
 }
 
 
-function sendEmailToUser(emailAddress, subject, content) {
-    const mailOptions = {
-        from: config.emailFrom,
-        to: emailAddress,
-        subject: subject,
-        html: content
-    };
-
-    transporter.sendMail(mailOptions, function (err, info) {
-        if (err)
-            console.log(err)
-        else
-            console.log(info);
-    });
-}
-
-
 //TODO: Maybe todo. This doesn't check ID, but it's random enough that I'd be surprised if this became an issue.
 async function checkUserData(id, userEmail) {
     if (dbConnection) {
@@ -399,27 +422,6 @@ async function getStats() {
     }
 }
 
-//TODO: This currently doesn't have any validation, including if users are already signed up.
-//Not sure if we care about that, but we probably do care about bot signups and the like.
-
-function addNewUserToDatabase(userEmail, userDisplayName, marathon, userID, options) {
-    var userData = {
-        email: userEmail,
-        name: userDisplayName,
-        ID: userID,
-        marathon: marathon,
-        progress: {}
-    }
-
-    //options not currently implemented, it's a placeholder
-    //object for things we might add later 
-    if (dbConnection) {
-        dbConnection.collection("users").insertOne(userData, function (err, result) {
-            if (err) throw err;
-        }
-        );
-    }
-}
 
 
 app.listen(2222);

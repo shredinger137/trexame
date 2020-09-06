@@ -56,7 +56,14 @@ class Dashboard extends React.Component {
         axios.get(`${config.api}/updateprogress?user=${this.state.id}&distance=${newMiles}&date=${newDate}`).then(res => this.getID())
     }
 
-    getID() {
+    getID(){
+        console.log(this.props);
+        if(this.props.userId){
+            this.setState({id: this.props.userId});
+        }
+    }
+
+    getIDOld() {
         const params = new URLSearchParams(window.location.search);
         if (params && params.get("id")) {
             var id = params.get("id");
@@ -124,7 +131,6 @@ class Dashboard extends React.Component {
         document.getElementById("updateMilesForm").style.display = "none";
     }
 
-    //This doesn't work. It doesn't seem to properly sort by the second element.
     sortDates() {
         var progress = this.state.userData.progress;
         var sortableArray = [];
@@ -168,6 +174,7 @@ class Dashboard extends React.Component {
         return (
             <div className="App">
                 <h2>Dashboard</h2>
+                <h3>{this.state.id}</h3>
                 <h3>{this.state.userData.name}</h3>
                 <div>
                     <div id="progress">
