@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import Header from './components/Header';
 import Home from './components/Home';
 import Login from './components/Login';
+import Challenges from './pages/Challenges';
 
 
 var jwt = require('jsonwebtoken');
@@ -33,7 +34,7 @@ class App extends React.Component {
     showLogIn: false
   };
 
-  componentDidMount(){
+  componentDidMount() {
     this.checkLogin();
   }
 
@@ -50,6 +51,8 @@ class App extends React.Component {
   }
 
   checkLogin() {
+    console.log("check login");
+    console.log(this);
     var token = Cookies.get('token') ? Cookies.get('token') : false;
     console.log(token);
     if (!token) {
@@ -67,7 +70,7 @@ class App extends React.Component {
     })
 
   }
-  
+
   logOut() {
     var cookies = document.cookie.split(";");
     for (var i = 0; i < cookies.length; i++) {
@@ -90,30 +93,36 @@ class App extends React.Component {
         <Header
           handleSignUpClick={this.handleSignUpClick}
           handleLoginClick={this.handleLoginClick}
-          isLoggedIn = {this.state.isLoggedIn}
-          username = {this.state.username}
-          logOut = {this.logOut} />
+          isLoggedIn={this.state.isLoggedIn}
+          username={this.state.username}
+          logOut={this.logOut} />
         <h1>Virtual Marathon Tracker</h1>
         <BrowserRouter>
           <div>
             <Switch>
-              <Route path="/dashboard">
-                <Dashboard 
-                  userId = {this.state.userId}
-                />
-              </Route>
-              <Route path="/stats">
-                <Stats />
-              </Route>
-              <Route path="/">
-                <Home />
-              </Route>
+              {this.state.isLoggedIn ?
+                <>
+                  <Route path="/dashboard">
+                    <Dashboard
+                      checkLogin={this.checkLogin}
+                      username={this.state.username}
+                      userId={this.state.userId}
+                    />
+                  </Route>
+                  <Route path="/stats" component={Stats} />
+                  <Route path="/challenges" component={Challenges} />
+                  <Route exact path="/" component={Home} />
+                </>
+                :
+                null
+              }
+              <Route path="/" component={Home} />
             </Switch>
           </div>
         </BrowserRouter>
-        {this.state.showSignup ? <Signup handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
-        {this.state.showLogIn ? <Login checkLogin={this.checkLogin} handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
-      </div>
+        { this.state.showSignup ? <Signup handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null }
+    { this.state.showLogIn ? <Login checkLogin={this.checkLogin} handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null }
+      </div >
     );
   }
 }

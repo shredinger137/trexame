@@ -14,16 +14,15 @@ var Header = (props) => {
                     }
 
                     <ul>
-                    {props.isLoggedIn ?
-                        <li><a href="/dashboard">Dashboard</a></li>
-                        :
-                        <li>Menu 1</li>
-                    }
+                        {props.isLoggedIn ?
+                            <>
+                                <li><a href="/dashboard">Dashboard</a></li>
+                                <li><a href="/challenges">Challenges</a></li>
+                            </>
+                            :
+                            null
+                        }
 
-                        
-                        <li>Menu 2</li>
-                        <li>Menu 3</li>
-                        <li>Menu 4</li>
                         {props.isLoggedIn ?
                             <li className="signUpButton"><span onClick={props.logOut} style={{ cursor: "pointer" }}>Log Out</span></li>
                             :

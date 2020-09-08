@@ -28,7 +28,7 @@ class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        this.getID();
+        console.log(this.props);
         this.initDate();
     }
 
@@ -53,15 +53,11 @@ class Dashboard extends React.Component {
         document.getElementById("addMiles").value = "";
         var newDate = document.getElementById("date").value;
         this.initDate();
-        axios.get(`${config.api}/updateprogress?user=${this.state.id}&distance=${newMiles}&date=${newDate}`).then(res => this.getID())
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${newDate}`).then(res => this.getID())
     }
 
-    getID(){
-        console.log(this.props);
-        if(this.props.userId){
-            this.setState({id: this.props.userId});
-        }
-    }
+//TODO: All of this.
+//Get user data. Change the API to get user data and data related to, specifically, challenges.
 
     getIDOld() {
         const params = new URLSearchParams(window.location.search);
