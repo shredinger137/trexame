@@ -38,6 +38,10 @@ class App extends React.Component {
     this.checkLogin();
   }
 
+  componentDidUpdate(){
+    
+  }
+
   handleSignUpClick = () => {
     this.setState({
       showSignup: !this.state.showSignup
@@ -51,19 +55,14 @@ class App extends React.Component {
   }
 
   checkLogin() {
-    console.log("check login");
-    console.log(this);
     var token = Cookies.get('token') ? Cookies.get('token') : false;
-    console.log(token);
     if (!token) {
       return false;
     }
     axios.get(config.api + "/verifytoken" + "?token=" + token).then(res => {
-      console.log(res);
-      console.log(jwt.decode(token));
+
       if (res.data === "Valid" && jwt.decode(token) && jwt.decode(token)['username'] && jwt.decode(token)['id']) {
         this.setState({ isLoggedIn: true, username: jwt.decode(token)['username'], userId: jwt.decode(token)['id'] });
-        console.log(this.state);
         return true;
       } return false;
 
@@ -86,8 +85,9 @@ class App extends React.Component {
 
 
 
-
   render() {
+
+    //<Route exact path={"/"} component={() => <Start socket={socket} addUser={addUser}/>}/>
     return (
       <div className="App">
         <Header
@@ -110,7 +110,11 @@ class App extends React.Component {
                     />
                   </Route>
                   <Route path="/stats" component={Stats} />
-                  <Route path="/challenges" component={Challenges} />
+                  <Route path="/challenges"
+                    component={() =>
+                      <Challenges userId={this.state.userId} />
+                    }
+                  />
                   <Route exact path="/" component={Home} />
                 </>
                 :
@@ -120,8 +124,8 @@ class App extends React.Component {
             </Switch>
           </div>
         </BrowserRouter>
-        { this.state.showSignup ? <Signup handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null }
-    { this.state.showLogIn ? <Login checkLogin={this.checkLogin} handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null }
+        {this.state.showSignup ? <Signup handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
+        {this.state.showLogIn ? <Login checkLogin={this.checkLogin} handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
       </div >
     );
   }

@@ -2,7 +2,6 @@ import React from 'react';
 import '../css/menu.css'
 
 var Header = (props) => {
-    console.log(props);
     return (
         <>
             <div className="menuWrapper">

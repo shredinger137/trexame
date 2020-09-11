@@ -28,8 +28,6 @@ module.exports = {
   },
 
   createUserAccount: async function (username, password, emailAddress, id, res) {
-    console.log("in createuseraccount, password " + password);
-
     var passwordHashed = passwordHash.generate(password);
 
     var userData = {
@@ -50,9 +48,28 @@ module.exports = {
 
   checkLogin: checkLogin,
   checkIfUserExists: checkIfUserExists,
-  getNewId: getNewId
+  getNewId: getNewId,
+  createNewChallenge: createNewChallenge,
+  getUserChallenges: getUserChallenges
 }
 
+async function createNewChallenge(challengeName, targetMiles, ownerId){
+  console.log("new");
+  var data = {
+    challengeName: challengeName,
+    targetMiles: targetMiles,
+    ownerId: ownerId
+  }
+
+  if (dbConnection) {
+    dbConnection.collection("challenges").insertOne(data, function (err, result) {
+      if (err) throw err;
+      return true;
+    }
+    )
+  }
+
+}
 
 async function checkLogin(email, password) {
   if (dbConnection) {
@@ -106,5 +123,32 @@ async function getNewId() {
     } else {
       return id;
     }
+  }
+}
+
+async function getUserChallenges(id) {
+  console.log(id);
+  if (dbConnection) {
+    try {
+      var userOwnedChallenges = await dbConnection.collection("challenges").find({ ownerId: id }).toArray();
+    } catch (err) {
+      console.log(err);
+      return [false, err];
+    }
+    if (userOwnedChallenges) {
+      try {
+        var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: {$in : [id]} }).toArray();
+      } catch (err) {
+        console.log(err);
+        return [false, err];
+      }
+      if(userJoinedChallenges){
+        var allChallenges = {owned: userOwnedChallenges, joined: userJoinedChallenges};
+        return allChallenges;
+      } else {
+        return "error"
+      }
+    }
+
   }
 }

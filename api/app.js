@@ -73,6 +73,44 @@ app.get("/signup", function (req, res) {
         }
     });
 
+app.get("/createChallenge", function(req, res) {
+
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+    res.setHeader("Content-Type", "text/plain");
+    if(req && req.query.name && req.query.miles && req.query.id){
+       dbFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
+           res.send(response);
+       });
+       res.send("success");
+    } else {
+        res.send("err");
+    }
+    
+})
+
+
+app.get("/getUserChallenges", function(req, res){
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+
+    dbFunctions.getUserChallenges(req.query.id).then(response => {
+        res.send(response);
+    })
+
+
+} )
+
+
+
 app.get("/login", function (req, res) {
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {

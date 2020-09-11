@@ -8,21 +8,32 @@ import '../css/modal.css'
 
 
 class NewChallenge extends React.Component {
-  
+
+  componentDidUpdate(){
+
+  }
+
+  componentDidMount(){
+
+  }
 
   stopProp = (e) => {
     e.stopPropagation();
   }
 
-  createNewChallenge(e){
+  createNewChallenge(e) {
     e.preventDefault();
     var marathonName = document.getElementById('challengeName').value;
     var targetMiles = document.getElementById('miles').value;
 
-    //TODO: API call that actually creates the thing and gets a response. Don't forget you need to get an ID and use credentials.
-    //You should probably be checking credentials with every API call later.
-    
+    axios.get(config.api + "/createChallenge" + "?name=" + marathonName + "&miles=" + targetMiles + "&id=" + this.props.userId).then(res => {
+      //TODO: Respond to resolution
+      console.log(res);
+    }
+    )
   }
+
+
 
 
   render() {
@@ -31,7 +42,7 @@ class NewChallenge extends React.Component {
         <div className="modalInner" onClick={this.stopProp}>
           <br /><br /><br />
           <h3>New</h3><br /><br />
-          <p>This doesn't do anything yet</p>
+          <p>This doesn't do anything yet. {this.props.userId}</p>
           <form onSubmit={this.createNewChallenge.bind(this)}>
             <label><span> Challenge Name:{" "}</span>
               <input id="challengeName" />

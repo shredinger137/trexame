@@ -28,7 +28,6 @@ class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        console.log(this.props);
         this.initDate();
     }
 
