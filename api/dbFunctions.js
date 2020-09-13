@@ -53,22 +53,24 @@ module.exports = {
   getUserChallenges: getUserChallenges
 }
 
-async function createNewChallenge(challengeName, targetMiles, ownerId){
-  console.log("new");
-  var data = {
-    challengeName: challengeName,
-    targetMiles: targetMiles,
-    ownerId: ownerId
-  }
+async function createNewChallenge(challengeName, targetMiles, ownerId) {
 
-  if (dbConnection) {
-    dbConnection.collection("challenges").insertOne(data, function (err, result) {
-      if (err) throw err;
-      return true;
+  getNewId().then(challengeId => {
+    var data = {
+      challengeName: challengeName,
+      targetMiles: targetMiles,
+      ownerId: ownerId,
+      challengeId: challengeId
     }
-    )
-  }
 
+    if (dbConnection) {
+      dbConnection.collection("challenges").insertOne(data, function (err, result) {
+        if (err) throw err;
+        return true;
+      }
+      )
+    }
+  })
 }
 
 async function checkLogin(email, password) {
@@ -113,7 +115,7 @@ async function getNewId() {
   var id = Math.random().toString(36).slice(2);
   if (dbConnection) {
     try {
-      var account = await dbConnection("users").findOne({ id: id });
+      var account = await dbConnection.collection("users").findOne({ trexaId: id });
     } catch (err) {
       console.log(err);
       return false;
@@ -121,10 +123,22 @@ async function getNewId() {
     if (account) {
       getNewId();
     } else {
-      return id;
+      try {
+        var challenge = await dbConnection.collection("challenges").findOne({ challengeId: id });
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+      if (challenge) {
+        getNewId();
+      } else {
+        return id;
+      }
     }
   }
 }
+
+
 
 async function getUserChallenges(id) {
   console.log(id);
@@ -137,13 +151,13 @@ async function getUserChallenges(id) {
     }
     if (userOwnedChallenges) {
       try {
-        var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: {$in : [id]} }).toArray();
+        var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: { $in: [id] } }).toArray();
       } catch (err) {
         console.log(err);
         return [false, err];
       }
-      if(userJoinedChallenges){
-        var allChallenges = {owned: userOwnedChallenges, joined: userJoinedChallenges};
+      if (userJoinedChallenges) {
+        var allChallenges = { owned: userOwnedChallenges, joined: userJoinedChallenges };
         return allChallenges;
       } else {
         return "error"
@@ -151,4 +165,8 @@ async function getUserChallenges(id) {
     }
 
   }
+}
+
+async function getUserChallengeData(challenge){
+  
 }

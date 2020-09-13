@@ -27,9 +27,9 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
     //things that happen on startup should happen here, after the database connects
 
-    generateStats();
-    createLeaderboardByTotalDistance();
-    createListOfCompleted();
+    //generateStats();
+    //createLeaderboardByTotalDistance();
+    //createListOfCompleted();
 })
 
 
@@ -67,13 +67,13 @@ app.get("/signup", function (req, res) {
             }
         }
         )
-        }
-        else {
-            res.send("oop");
-        }
-    });
+    }
+    else {
+        res.send("oop");
+    }
+});
 
-app.get("/createChallenge", function(req, res) {
+app.get("/createChallenge", function (req, res) {
 
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
@@ -82,19 +82,19 @@ app.get("/createChallenge", function(req, res) {
         }
     } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
     res.setHeader("Content-Type", "text/plain");
-    if(req && req.query.name && req.query.miles && req.query.id){
-       dbFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
-           res.send(response);
-       });
-       res.send("success");
+    if (req && req.query.name && req.query.miles && req.query.id) {
+        dbFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
+            res.send(response);
+        });
+        res.send("success");
     } else {
         res.send("err");
     }
-    
+
 })
 
 
-app.get("/getUserChallenges", function(req, res){
+app.get("/getUserChallenges", function (req, res) {
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
         if (allowedOrigins.indexOf(origin) > -1) {
@@ -105,9 +105,26 @@ app.get("/getUserChallenges", function(req, res){
     dbFunctions.getUserChallenges(req.query.id).then(response => {
         res.send(response);
     })
+})
 
 
-} )
+app.get("/getUserChallengeData", function (req, res) {
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+
+    if (req.query && req.query.challenge) {
+        dbFunctions.getUserChallengeData(req.query.challenge).then(response => {
+            res.send(response);
+        })
+
+    }
+}
+)
+
 
 
 

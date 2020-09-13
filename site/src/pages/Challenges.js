@@ -57,7 +57,9 @@ class Challenges extends React.Component {
                     <p>Owned Challenges:<br />
                         {this.state.ownedChallenges.map(challenge => (
                             <div>
+                                <a href={`/dashboard?challenge=${challenge.challengeId}`}>
                                 {challenge.challengeName} <br />
+                                </a>
                             </div>
                         ))}
                         <br /><br />

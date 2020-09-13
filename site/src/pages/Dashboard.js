@@ -58,6 +58,15 @@ class Dashboard extends React.Component {
 //TODO: All of this.
 //Get user data. Change the API to get user data and data related to, specifically, challenges.
 
+    getMarathonFromId(){
+        const params = new URLSearchParams(window.location.search);
+        if (params && params.get("challenge")) {
+            this.setState({
+                challengeId: params.get("challenge")
+            })
+        }
+    }
+
     getIDOld() {
         const params = new URLSearchParams(window.location.search);
         if (params && params.get("id")) {
