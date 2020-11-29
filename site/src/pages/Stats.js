@@ -1,6 +1,4 @@
 import React from 'react';
-import '../App.css';
-import '../css/common.css'
 import { config } from '../config';
 import axios from 'axios';
 

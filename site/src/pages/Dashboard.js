@@ -1,34 +1,43 @@
 import React from 'react';
-import '../App.css';
-import '../css/common.css'
 import axios from 'axios';
 import '../components/Signup';
 import { config } from "../config.js";
 import Achievements from '../components/Achievements';
 
+import "../css/dashboard.css"
+
 
 class Dashboard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.initDate = this.initDate.bind(this);
-    }
+
 
     state = {
+        marathonName: "",
+        targetMiles: 0,
         userData: {
             progress: {},
             marathon: "bridging",
             name: ""
         },
+        progressEntries: {},
         progressSorted: [],
         progressTotal: 0,
         progressTotalPercent: 0,
-        id: "",
         marathonDistance: 42,
-        marathonName: ""
+        marathonName: "",
+        challengeId: ""
     };
 
     componentDidMount() {
         this.initDate();
+        this.getMarathonData();
+        this.getUserData();
+    }
+
+    componentDidUpdate(prevprops, prevstate) {
+        if(this.props.userId != prevprops.userId){
+            this.getUserData();
+        }
+        
     }
 
     initDate() {
@@ -46,84 +55,51 @@ class Dashboard extends React.Component {
 
     }
 
+    //TODO: Challenge isn't a state item.
+
     handleAddMiles(event) {
         event.preventDefault();
         var newMiles = document.getElementById("addMiles").value;
         document.getElementById("addMiles").value = "";
         var newDate = document.getElementById("date").value;
         this.initDate();
-        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${newDate}`).then(res => this.getID())
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${newDate}&challenge=${this.state.challengeId}`).then(
+            //put something here to load the latest data
+        )
     }
 
-//TODO: All of this.
-//Get user data. Change the API to get user data and data related to, specifically, challenges.
 
-    getMarathonFromId(){
+    getUserData() {
+        console.log("userdata");
+        axios.get(`${config.api}/getUserChallengeData?user=${this.props.userId}&challenge=${this.state.challengeId}`).then(res => {
+            console.log(res);
+            this.setState({progressEntries: res.data });
+            this.setState({progressSorted: this.sortDates()})
+        })
+    }
+
+    getMarathonData() {
+        var challengeId = this.getMarathonId();
+        if(challengeId){
+            this.setState({challengeId: challengeId});
+        }
+        axios.get(`${config.api}/getChallengeData?challengeId=${challengeId}`).then(res => {
+            this.setState({
+                challengeName: res.data.challengeName,
+                targetMiles: res.data.targetMiles
+            });
+          
+        })
+    }
+
+    getMarathonId() {
         const params = new URLSearchParams(window.location.search);
         if (params && params.get("challenge")) {
-            this.setState({
-                challengeId: params.get("challenge")
-            })
+            return params.get("challenge");
         }
     }
 
-    getIDOld() {
-        const params = new URLSearchParams(window.location.search);
-        if (params && params.get("id")) {
-            var id = params.get("id");
-            this.setState({ id: id });
-            axios.get(`${config.api}/userdata?user=${id}`).then(res => {
-                if (res && res.data && res.data != "id_not_found") {
-
-                    if (res.data.marathon == "bridging") {
-                        this.setState({ marathonDistance: 42, marathonName: "Bridging!" });
-                    }
-                    if (res.data.marathon == "fullBay") {
-                        this.setState({ marathonDistance: 155, marathonName: "Full Bay" });
-                    }
-                    if (res.data.marathon == "mini") {
-                        this.setState({ marathonDistance: 3.4, marathonName: "Mini Marathon" });
-                    }
-
-                    document.getElementById("marathon").value = res.data.marathon;
-
-                    this.setState({ userData: res.data });
-                    var progressArray = [];
-                    var total = 0;
-                    for (var progressDate in this.state.userData.progress) {
-                        progressArray.push([progressDate, this.state.userData.progress[progressDate]])
-                        total = total + parseFloat(this.state.userData.progress[progressDate]);
-                    }
-                    total = Math.floor(total * 1000) / 1000;
-                    var totalPercent = Math.floor((total / this.state.marathonDistance) * 10000) / 100;
-                    if (totalPercent > 100) { totalPercent = 100 }
-                    if (totalPercent < 5) {
-                        if (document.getElementById("progressText") !== null) {
-                            document.getElementById("progressText").style.display = "none";
-                        }
-                    }
-                    else {
-                        if (document.getElementById("progressText") !== null) {
-                            document.getElementById("progressText").style.display = "block";
-                        }
-                    }
-
-                    if (res.data && res.data.allowPublic && res.data.allowPublic == "true") {
-                        document.getElementById("publicToggle").checked = true;
-                    }
-
-                    this.setState({
-                        progressTotal: total,
-                        progressTotalPercent: totalPercent
-                    });
-                    var sorted = this.sortDates();
-                    this.setState({ progressSorted: sorted });
-
-                } else { this.handleNotFound(); }
-
-            })
-        } else { console.log("id not found"); }
-    }
+    
 
     handlePublicOption() {
         var value = document.getElementById("publicToggle").checked;
@@ -136,7 +112,7 @@ class Dashboard extends React.Component {
     }
 
     sortDates() {
-        var progress = this.state.userData.progress;
+        var progress = this.state.progressEntries;
         var sortableArray = [];
         for (var date in progress) {
             var convertedDate = new Date(date).getTime();
@@ -178,20 +154,19 @@ class Dashboard extends React.Component {
         return (
             <div className="App">
                 <h2>Dashboard</h2>
-                <h3>{this.state.id}</h3>
-                <h3>{this.state.userData.name}</h3>
+                <h3>{this.props.userId}</h3>
                 <div>
                     <div id="progress">
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%" }}>
-                            <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
                         </div>
                     </div>
+                    <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
                     <br />
-                    <span>Your Marathon: {this.state.marathonName} ({this.state.marathonDistance} miles)</span>
+                    <span>Your Marathon: {this.state.challengeName} ({this.state.targetMiles} miles)</span>
                     <br />
                     <br />
                     <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>
-                        <p className="introText" style={{textAlign: "center"}}>Enter your distance and the date to record progress. Enter a '0' for any date to remove it.</p>
+                        <p className="introText" style={{ textAlign: "center" }}>Enter your distance and the date to record progress. Enter a '0' for any date to remove it.</p>
                         <br />
                         <table>
                             <tbody>

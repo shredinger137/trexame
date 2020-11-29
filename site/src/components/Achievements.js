@@ -1,6 +1,4 @@
 import React from 'react';
-import '../App.css';
-import '../css/common.css'
 import { badgeData } from "./achievementsData.js";
 
 class Achievements extends React.Component {

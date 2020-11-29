@@ -1,10 +1,9 @@
 import React from 'react';
-import '../App.css';
-import '../css/common.css'
 import axios from 'axios';
 import '../components/Signup';
 import { config } from "../config.js";
 import NewChallenge from '../components/NewChallenge';
+import '../css/modal.css';
 
 
 class Challenges extends React.Component {

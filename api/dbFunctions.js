@@ -14,6 +14,8 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
 })
 
+//STATUS: I added some functions for creating users and registering, but haven't created the frontend or the routes. So do that.
+
 
 module.exports = {
   updateUserTotal: function (id, total, marathonID) {
@@ -50,7 +52,11 @@ module.exports = {
   checkIfUserExists: checkIfUserExists,
   getNewId: getNewId,
   createNewChallenge: createNewChallenge,
-  getUserChallenges: getUserChallenges
+  getUserChallenges: getUserChallenges,
+  getUserData: getUserData,
+  getChallengeData: getChallengeData,
+  getUserChallengeData: getUserChallengeData,
+  updateUserProgress: updateUserProgress
 }
 
 async function createNewChallenge(challengeName, targetMiles, ownerId) {
@@ -94,6 +100,77 @@ async function checkLogin(email, password) {
     }
   }
 }
+
+async function updateUserProgress(id, distance, date, challenge) {
+  if (id && distance && date && challenge) {
+    distance = Number(distance);
+    getUserData(id).then(userData => {
+      console.log("get");
+      console.log(userData);
+      if (userData.progress) {
+        //user's 'progress' entry exists
+        var userProgress = userData.progress;
+
+        if (userProgress[challenge]) {
+          //user has progress entered for the current challenge
+          var challengeProgress = userProgress[challenge];
+          challengeProgress[date] = distance;
+          if (distance == 0) {
+            delete challengeProgress[date]
+          }
+          userProgress[challenge] = challengeProgress;
+          //userProgress is now prepped to be written to the database
+
+        } else {
+          //user progress exists, but entry for this challenge does not
+          userProgress[challenge] = {};
+          userProgress[challenge][date] = distance;
+
+        }
+
+      } else {
+        console.log("else");
+        var userProgress = {};
+        userProgress[challenge] = {};
+        userProgress[challenge][date] = distance;
+      }
+
+      if (dbConnection) {
+
+        dbConnection.collection("users").updateOne({ trexaId: id }, { $set: { progress: userProgress } }, function (err, result) {
+          if (err) throw err;
+          return true;
+        }
+        )
+      } else {
+        return false;
+      }
+
+    })
+  }
+}
+
+async function getUserChallengeData(userID, challengeID) {
+  if (dbConnection) {
+    
+    try {
+      var account = await dbConnection.collection("users").findOne({ trexaId: userID });
+    } catch (err) {
+      console.log(err);
+      return [false, err];
+    }
+    if (account == null) {
+      return [false, 100];
+    }
+    if (account && account["progress"]&& account["progress"][challengeID]) {
+      return account["progress"][challengeID];
+    } else {
+      return [false, 150];
+    }
+  }
+}
+
+
 
 async function checkIfUserExists(email) {
   if (dbConnection) {
@@ -141,7 +218,6 @@ async function getNewId() {
 
 
 async function getUserChallenges(id) {
-  console.log(id);
   if (dbConnection) {
     try {
       var userOwnedChallenges = await dbConnection.collection("challenges").find({ ownerId: id }).toArray();
@@ -167,6 +243,44 @@ async function getUserChallenges(id) {
   }
 }
 
-async function getUserChallengeData(challenge){
-  
+//TODO: Probably not wise to get all user data every time but whatever. This is alpha. Maybe later we can prep this data before sending it.
+async function getUserData(userId) {
+  if (dbConnection) {
+    try {
+      var userData = await dbConnection.collection("users").findOne({ trexaId: userId });
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    if (userData) {
+      return userData;
+    } else {
+      return false;
+    }
+
+  } else {
+    return false;
+  }
+
+}
+
+async function getChallengeData(challengeId) {
+
+  if (dbConnection) {
+    try {
+      var challengeData = await dbConnection.collection("challenges").findOne({ challengeId: challengeId });
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    if (challengeData) {
+      return challengeData;
+    } else {
+      return false;
+    }
+
+  } else {
+    return false;
+  }
+
 }

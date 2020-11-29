@@ -2,9 +2,9 @@ import React from 'react';
 import '../App.css';
 import { config } from "../config.js";
 import axios from 'axios';
-import '../css/common.css'
-import '../css/modal.css'
 
+import '../css/gridLayout.css';
+import '../css/forms.css';
 
 
 class Login extends React.Component {
@@ -20,10 +20,8 @@ class Login extends React.Component {
       }
       console.log(res.data.result);
     })
-
   }
 
-  
 
   stopProp = (e) => {
     e.stopPropagation();
@@ -31,24 +29,24 @@ class Login extends React.Component {
 
   render() {
     return (
-      <div className="modalWrapper" onClick={() => this.props.handleLoginClick()}>
-        <div className="modalInner" onClick={this.stopProp}>
-          <br /><br /><br />
-          <h3>Log In</h3><br /><br />
-          <form onSubmit={this.submitLogin.bind(this)}>
-            <label><span> Email Address:{" "}</span>
-              <input type="email" id="email" />
-            </label>
-            <br />
-            <label> <span>Password:{" "}</span>
-              <input type="password" id="password"></input>
-            </label>
-            <br />
-            <br /><br />
-            <input type="submit" value="Log In" />
-          </form>
 
-        </div>
+      <div className="loginWrapper">
+        <h3>Log In</h3><br />
+
+        <form onSubmit={this.submitLogin.bind(this)}>
+          <div className="form grid-2 formWrapper" style={{ margin: "0 auto" }}>
+            <label>
+              Email Address:
+            </label>
+            <input type="email" id="email" />
+            <label>Password:</label>
+            <input type="password" id="password"></input>
+          </div>
+          <br />
+          <input type="submit" value="Log In" />
+
+        </form>
+
       </div>
     );
   }

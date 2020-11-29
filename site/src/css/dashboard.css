@@ -1,0 +1,124 @@
+
+.introText {
+    text-align: left;
+    margin: 0 auto;
+    width: 75vw;
+}
+
+.strongText {
+    font-size: 1.9rem;
+}
+
+#progress {
+    margin: 0 auto;
+    width: 75vw;
+    background-color: grey;
+}
+  
+#progressBar {
+    width: 0%;
+    height: 10px;
+    background-color: green;
+}
+
+input {
+    background-color: #c9c9c9;
+    margin-right: 10px;
+    
+}
+
+button {
+    background-color: black;
+    display: inline-block;
+    border: 0.1em solid #FFFFFF;
+    margin:0 0.3em 0.3em 0;
+    border-radius:0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #FFFFFF;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+
+
+.disabled {
+    pointer-events: none;
+    background-color: #2E2E2E;
+}
+
+
+
+.button1:hover {
+    background-color: #2E2E2E;
+   
+}
+
+table {
+    margin: 0 auto;
+}
+
+td {
+    vertical-align: middle;
+}
+
+tr {
+    margin-bottom: 10px;
+}
+
+.badgeGrid {
+    margin: 0 auto;
+    width: 70vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+}
+
+.leaderboard, .leaderboard tr td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+
+}
+
+
+
+.badgeGrid div {
+    border-style: solid;
+    padding: 15px;
+}
+
+.small {
+
+    font-size: 1rem;
+}
+
+.badgeDescription {
+    font-style: italic;
+    font-size: 1.1rem;
+
+}
+
+.nextBadge {
+    opacity: .3
+}
+
+@media screen and (max-width: 800px) {
+
+    .badgeGrid {
+        width: 95vw;
+        grid-template-columns: 1fr 1fr;
+    
+    }
+    
+    .button1 {
+        display: block;
+        margin: 0.2em auto;
+    }
+
+
+
+  }
+
+
+  

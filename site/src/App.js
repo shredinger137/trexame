@@ -1,6 +1,9 @@
+//next: consider changing the date storage to be unix date for easy sorting in the database
+
 import React from 'react';
-import './App.css';
-import './css/common.css'
+
+import './css/commonStyles.css' //TODO: This is replacing common.css; fill it out with that content
+
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import Stats from './pages/Stats';
 import './components/Signup';
@@ -38,15 +41,10 @@ class App extends React.Component {
     this.checkLogin();
   }
 
-  componentDidUpdate(){
-    
+  componentDidUpdate() {
+
   }
 
-  handleSignUpClick = () => {
-    this.setState({
-      showSignup: !this.state.showSignup
-    });
-  }
 
   handleLoginClick = () => {
     this.setState({
@@ -84,10 +82,8 @@ class App extends React.Component {
   }
 
 
-
   render() {
-
-    //<Route exact path={"/"} component={() => <Start socket={socket} addUser={addUser}/>}/>
+ 
     return (
       <div className="App">
         <Header
@@ -96,11 +92,9 @@ class App extends React.Component {
           isLoggedIn={this.state.isLoggedIn}
           username={this.state.username}
           logOut={this.logOut} />
-        <h1>Virtual Marathon Tracker</h1>
         <BrowserRouter>
           <div>
             <Switch>
-              {this.state.isLoggedIn ?
                 <>
                   <Route path="/dashboard">
                     <Dashboard
@@ -115,17 +109,28 @@ class App extends React.Component {
                       <Challenges userId={this.state.userId} />
                     }
                   />
+                  <Route path="/signup"
+                    component={() =>
+                      <Signup />
+                    }
+                  />
+                  <Route path="/login"
+                    component={() =>
+                      <Login
+                        checkLogin={this.checkLogin}
+                        isLoggedIn={this.state.isLoggedIn}
+                        username={this.state.username} />
+                    }
+                  />
                   <Route exact path="/" component={Home} />
+
+
                 </>
-                :
-                null
-              }
-              <Route path="/" component={Home} />
+
+              <Route path="/" component={() =>  <Home isLoggedIn={this.state.isLoggedIn} /> } />
             </Switch>
           </div>
         </BrowserRouter>
-        {this.state.showSignup ? <Signup handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
-        {this.state.showLogIn ? <Login checkLogin={this.checkLogin} handleSignUpClick={this.handleSignUpClick} handleLoginClick={this.handleLoginClick} isLoggedIn={this.state.isLoggedIn} username={this.state.username} /> : null}
       </div >
     );
   }

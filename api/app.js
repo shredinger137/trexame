@@ -44,7 +44,7 @@ cron.schedule("* * * * *", () => {
 //Express Routes
 //*****************
 
-//We're going to say that optional fields get a null value;
+//We're going to say that optional fields get a null value
 
 app.get("/signup", function (req, res) {
 
@@ -109,22 +109,37 @@ app.get("/getUserChallenges", function (req, res) {
 
 
 app.get("/getUserChallengeData", function (req, res) {
+    console.log("1");
+
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
         if (allowedOrigins.indexOf(origin) > -1) {
             res.setHeader('Access-Control-Allow-Origin', origin);
         }
     } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
-
-    if (req.query && req.query.challenge) {
-        dbFunctions.getUserChallengeData(req.query.challenge).then(response => {
+    console.log(req.query);
+    if (req.query && req.query.user && req.query.challenge) {
+        dbFunctions.getUserChallengeData(req.query.user, req.query.challenge).then(response => {
             res.send(response);
         })
-
     }
 }
 )
 
+app.get("/getChallengeData", function (req, res) {
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+    if (req.query && req.query.challengeId) {
+        dbFunctions.getChallengeData(req.query.challengeId).then(response => {
+            res.send(response);
+        })
+    }
+}
+)
 
 
 
@@ -292,31 +307,19 @@ app.get("/updatePublicOption", function (req, res) {
 
 app.get("/updateprogress", function (req, res) {
 
+    console.log("update1");
+
     res.header("Access-Control-Allow-Origin", "*");
     res.setHeader("Content-Type", "text/plain");
 
-    var progressData;
     var id = req.query.user;
     var distance = req.query.distance;
     var date = req.query.date;
-    getUserData(id)
-        .then(data => {
-            progressData = data.progress;
-            progressData[date] = distance;
-            if (distance == 0) {
-                delete progressData[date];
-            }
+    var challenge = req.query.challenge;
 
-            if (dbConnection) {
-                dbConnection.collection("users").updateOne({ ID: id }, { $set: { progress: progressData } }, function (err, result) {
-                    if (err) throw err;
-                    else {
-                        res.send("200");
-                    }
-                }
-                );
-            }
-        })
+    dbFunctions.updateUserProgress(id, distance, date, challenge).then(result => {
+        res.send(result)});
+
 });
 
 function updateUserTotal(id, total) {
@@ -443,29 +446,6 @@ async function getAllUserData(query) {
     }
 }
 
-
-
-function createWelcomeEmail(id) {
-    var content = `<p>Welcome to the Skate the Bay Marathon!</p>
-                    <br /><br />
-                    <p>Thank you for signing up for Resurrection Roller Derby's Skate the Bay Virtual Marathon. Your unique dashboard link is: <a href="https://marathon.rrderby.org/dashboard?id=${id}">https://marathon.rrderby.org/dashboard?id=${id}</a>. Use this link to view
-                    and update your progress. Be sure to join our Facebook group and tag your photos/Tweets with #SkateTheBay to stay in touch with other skaters. </p>
-                    <br />
-                    <p>We're encouraging all participants to also get in contact with their local food banks to make donations. They are providing unprecedented support to our community, and we hope the roller derby and skating communities can help then succeed.</p>
-        `
-    return content;
-}
-
-
-//TODO: Maybe todo. This doesn't check ID, but it's random enough that I'd be surprised if this became an issue.
-async function checkUserData(id, userEmail) {
-    if (dbConnection) {
-        var results = await dbConnection.collection("users").find({ email: userEmail }).toArray();
-        if (results.length > 0) {
-            return false;
-        } else { return true; }
-    }
-}
 
 
 async function getStats() {

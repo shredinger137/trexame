@@ -7,25 +7,24 @@ var Header = (props) => {
             <div className="menuWrapper">
                 <div className="menuSubWrapper" id="mobileMenuWrapper">
                     {props.isLoggedIn ?
-                        <span className="user">{props.username}</span>
+                        <span className="user lightText">{props.username}</span>
                         :
-                        <span className="user" onClick={props.handleLoginClick}>Login</span>
+                        <a href="/login" className="user lightText">Login</a>
                     }
 
                     <ul>
                         {props.isLoggedIn ?
                             <>
-                                <li><a href="/dashboard">Dashboard</a></li>
-                                <li><a href="/challenges">Challenges</a></li>
+                                <li><a href="/challenges" className="lightText">Challenges</a></li>
                             </>
                             :
                             null
                         }
 
                         {props.isLoggedIn ?
-                            <li className="signUpButton"><span onClick={props.logOut} style={{ cursor: "pointer" }}>Log Out</span></li>
+                            <li className="signUpButton"><span className="lightText" onClick={props.logOut} style={{ cursor: "pointer" }}>Log Out</span></li>
                             :
-                            <li className="signUpButton"><span onClick={props.handleSignUpClick} style={{ cursor: "pointer" }}>Sign Up</span></li>
+                            <li className="signUpButton"><a href="/signup" className="lightText">Sign Up</a></li>
                         }
                     </ul>
                 </div>

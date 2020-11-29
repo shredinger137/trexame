@@ -1,6 +1,5 @@
 import React from 'react';
-import '../App.css';
-import '../css/common.css'
+import Signup from './Signup';
 
 class Front extends React.Component {
 
@@ -11,18 +10,14 @@ class Front extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <div className="introText">
+
+        <div>
           <br/><br/>
           <p>
-            This is a virtual marathon service. This is a development site, used while the service is being built. Features will slowly become available, but are likely to change.
+            <Signup />
           </p>
         </div>
 
-        <br />
-
-
-      </div>
     );
   }
 }

@@ -1,10 +1,7 @@
 import React from 'react';
-import '../App.css';
 import { config } from "../config.js";
 import axios from 'axios';
-import '../css/common.css'
-import '../css/modal.css'
-
+import '../css/modal.css';
 
 
 class NewChallenge extends React.Component {
