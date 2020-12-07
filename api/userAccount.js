@@ -14,7 +14,6 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
 })
 
-//STATUS: I added some functions for creating users and registering, but haven't created the frontend or the routes. So do that.
 
 
 module.exports = {
@@ -51,32 +50,25 @@ module.exports = {
   checkLogin: checkLogin,
   checkIfUserExists: checkIfUserExists,
   getNewId: getNewId,
-  createNewChallenge: createNewChallenge,
   getUserChallenges: getUserChallenges,
   getUserData: getUserData,
-  getChallengeData: getChallengeData,
   getUserChallengeData: getUserChallengeData,
-  updateUserProgress: updateUserProgress
+  updateUserProgress: updateUserProgress,
+  verifyToken:verifyToken
 }
 
-async function createNewChallenge(challengeName, targetMiles, ownerId) {
 
-  getNewId().then(challengeId => {
-    var data = {
-      challengeName: challengeName,
-      targetMiles: targetMiles,
-      ownerId: ownerId,
-      challengeId: challengeId
+function verifyToken(token){
+    if (!token){
+        return false;
     }
+    jwt.verify(token, config.tokenSecret, function(err, decoded){
+        if(err)
+        return false;
 
-    if (dbConnection) {
-      dbConnection.collection("challenges").insertOne(data, function (err, result) {
-        if (err) throw err;
+        //not totally sure if 'true' means it's actually verified or not
         return true;
-      }
-      )
-    }
-  })
+    })
 }
 
 async function checkLogin(email, password) {
@@ -152,20 +144,19 @@ async function updateUserProgress(id, distance, date, challenge) {
 
 async function getUserChallengeData(userID, challengeID) {
   if (dbConnection) {
-    
     try {
       var account = await dbConnection.collection("users").findOne({ trexaId: userID });
     } catch (err) {
       console.log(err);
-      return [false, err];
+      return false;
     }
     if (account == null) {
-      return [false, 100];
+      return false;
     }
     if (account && account["progress"]&& account["progress"][challengeID]) {
       return account["progress"][challengeID];
     } else {
-      return [false, 150];
+      return false;
     }
   }
 }
@@ -254,27 +245,6 @@ async function getUserData(userId) {
     }
     if (userData) {
       return userData;
-    } else {
-      return false;
-    }
-
-  } else {
-    return false;
-  }
-
-}
-
-async function getChallengeData(challengeId) {
-
-  if (dbConnection) {
-    try {
-      var challengeData = await dbConnection.collection("challenges").findOne({ challengeId: challengeId });
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-    if (challengeData) {
-      return challengeData;
     } else {
       return false;
     }

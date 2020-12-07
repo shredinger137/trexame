@@ -16,6 +16,7 @@ var Header = (props) => {
                         {props.isLoggedIn ?
                             <>
                                 <li><a href="/challenges" className="lightText">Challenges</a></li>
+                                <li><a href="/account" className="lightText">Account</a></li>
                             </>
                             :
                             null
@@ -34,7 +35,7 @@ var Header = (props) => {
                     <span></span>
                 </div>
             </div>
-            <div id="offsetSpace" style={{ height: "75px" }}></div>
+            <div id="offsetSpace" style={{ height: "25px" }}></div>
         </>
     );
 }

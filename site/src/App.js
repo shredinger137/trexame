@@ -1,4 +1,4 @@
-//next: consider changing the date storage to be unix date for easy sorting in the database
+//next: change the date storage to be unix date for easy sorting in the database
 
 import React from 'react';
 

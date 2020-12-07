@@ -56,14 +56,17 @@ class Dashboard extends React.Component {
     }
 
     //TODO: Challenge isn't a state item.
+    //Date should be in unix time
 
     handleAddMiles(event) {
         event.preventDefault();
         var newMiles = document.getElementById("addMiles").value;
         document.getElementById("addMiles").value = "";
         var newDate = document.getElementById("date").value;
+        var unixTime = ((new Date(newDate)).getTime());
         this.initDate();
-        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${newDate}&challenge=${this.state.challengeId}`).then(
+        console.log(unixTime);
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then(
             //put something here to load the latest data
         )
     }
@@ -74,7 +77,7 @@ class Dashboard extends React.Component {
         axios.get(`${config.api}/getUserChallengeData?user=${this.props.userId}&challenge=${this.state.challengeId}`).then(res => {
             console.log(res);
             this.setState({progressEntries: res.data });
-            this.setState({progressSorted: this.sortDates()})
+            this.setState({progressSorted: this.getDates()})
         })
     }
 
@@ -111,29 +114,22 @@ class Dashboard extends React.Component {
         document.getElementById("updateMilesForm").style.display = "none";
     }
 
-    sortDates() {
-        var progress = this.state.progressEntries;
-        var sortableArray = [];
-        for (var date in progress) {
-            var convertedDate = new Date(date).getTime();
-            sortableArray.push([date, convertedDate]);
+    getDates() {
+        
+        var total = 0;
+        var datesArray = [];
+        console.log(this.state.progressEntries);
 
+ 
+        for (var date in this.state.progressEntries) {
+            console.log(date);
+            var timestamp = new Date(Math.floor(date))
+            var dateString = (timestamp.getMonth() + 1) + "-" + (timestamp.getUTCDate()) + "-" + (timestamp.getFullYear());
+            datesArray.push([dateString, this.state.progressEntries[date]]);
+            total = total + this.state.progressEntries[date];
         }
-
-        sortableArray.sort(function (a, b) {
-            if (a[1] === b[1]) {
-                return 0;
-            }
-            else {
-                return (a[1] < b[1]) ? -1 : 1;
-            }
-        })
-
-        for (var date of sortableArray) {
-            date[1] = this.state.userData.progress[date[0]];
-            date[0] = date[0].replace("2020-", "");
-        }
-        return sortableArray.reverse();
+        this.setState({progressTotal: total, progressTotalPercent: ((total / this.state.marathonDistance)) * 100});
+        return datesArray;
     }
 
     handleUpdateMarathon(event) {
@@ -154,10 +150,9 @@ class Dashboard extends React.Component {
         return (
             <div className="App">
                 <h2>Dashboard</h2>
-                <h3>{this.props.userId}</h3>
                 <div>
                     <div id="progress">
-                        <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%" }}>
+                        <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
                     <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
@@ -166,7 +161,6 @@ class Dashboard extends React.Component {
                     <br />
                     <br />
                     <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>
-                        <p className="introText" style={{ textAlign: "center" }}>Enter your distance and the date to record progress. Enter a '0' for any date to remove it.</p>
                         <br />
                         <table>
                             <tbody>
@@ -190,21 +184,8 @@ class Dashboard extends React.Component {
                         </table>
                         <button type="submit">Submit</button>
                         <br /><br />
-                        <span className="small">Make my progress public:</span>
-
-                        <input type="checkbox" id="publicToggle" onChange={this.handlePublicOption.bind(this)} />
-
-                    </form>
+                      </form>
                     <br />
-                    <form id="updateMarathon" onSubmit={this.handleUpdateMarathon.bind(this)}>
-                        <label htmlFor="marathon">Change Marathon: </label>
-                        <select id="marathon">
-                            <option value="fullBay">Full Bay (155 miles)</option>
-                            <option value="bridging">Bridging (42 miles)</option>
-                            <option value="mini">Mini Marathon (3.4 miles)</option>
-                        </select>
-                        <button type="submit">Save</button>
-                    </form>
                     <br />
                     <div>
                         <span>Total: {this.state.progressTotal} / {this.state.marathonDistance}{" "} Miles</span>
@@ -224,7 +205,7 @@ class Dashboard extends React.Component {
                     </table>
                     <div id="notFound" style={{ display: "none" }}><p>The requested ID was not found. Please check your email for the correct link, or write to <a href="mailto:admin@rrderby.org">admin@rrderby.org</a> for help.</p></div>
                     <br />
-                    <h3>Achievements/Landmarks: {this.state.marathonName}</h3>
+                    <h3>Achievements: {this.state.marathonName}</h3>
                     <Achievements miles={this.state.progressTotal} marathon={this.state.userData.marathon} />
                     <br /><br />
                 </div>

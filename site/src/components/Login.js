@@ -6,14 +6,18 @@ import axios from 'axios';
 import '../css/gridLayout.css';
 import '../css/forms.css';
 
+//TODO: Login seems to be broken now.
+//checkLogin didn't respond with a cookie I guess?
 
 class Login extends React.Component {
 
   submitLogin(e) {
+    console.log('submit');
     e.preventDefault();
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
     axios.get(config.api + "/login?email=" + email + "&password=" + password, { withCredentials: true }).then(res => {
+      console.log(res);
       if (res && res.data && res.data.result) {
         this.setState({ loginResponse: res.data.result });
         this.props.checkLogin();
