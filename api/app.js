@@ -78,6 +78,19 @@ app.get("/signup", function (req, res) {
     }
 });
 
+app.get("/enrollUserInChallenge", function (req, res) {
+    if(req && req.query.challenge && req.query.user){
+        challengeDataFunctions.enrollUserInChallenge(req.query.challenge, req.query.user).then(result => {
+            console.log(result);
+            if(result){
+                res.send(true);
+            } else {
+                res.send(false);
+            }
+        })
+    }
+})
+
 app.get("/createChallenge", function (req, res) {
     //TODO: This receives an Authorization header, but doesn't verify it
 

@@ -23,8 +23,9 @@ class NewChallenge extends React.Component {
     e.preventDefault();
     var marathonName = document.getElementById('challengeName').value;
     var targetMiles = document.getElementById('miles').value;
+    var openEnrollment = document.getElementById('openEnrollment').value;
 
-    axios.get(config.api + "/createChallenge" + "?name=" + marathonName + "&miles=" + targetMiles + "&id=" + this.props.userId, { headers: {
+    axios.get(`${config.api}/createChallenge?name=${marathonName}&miles=${targetMiles}&id=${this.props.userId}&pubic=${openEnrollment}`  , { headers: {
       'Authorization': `token ${Cookies.get('token')}`
     }}).then(res => {
       //TODO: Respond to resolution
@@ -49,6 +50,9 @@ class NewChallenge extends React.Component {
             <br />
             <label> <span>Target Miles:{" "}</span>
               <input type="number" id="miles"></input>
+            </label>
+            <label> <span>Open Enrollment?{" "}</span>
+              <input type="checkbox" id="openEnrollment"></input>
             </label>
             <br />
             <br /><br />

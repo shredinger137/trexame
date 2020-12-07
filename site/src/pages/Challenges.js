@@ -18,7 +18,7 @@ class Challenges extends React.Component {
     }
 
     componentDidUpdate() {
-        
+
     }
 
     closeModal() {
@@ -27,13 +27,26 @@ class Challenges extends React.Component {
 
     getUserChallenges() {
         //TODO: Get and list both owned and participating challenges.
+        //API does not respond with joinedChallenges yet.
+
         axios.get(`${config.api}/getUserChallenges?id=${this.props.userId}`).then(res => {
             this.setState({
                 ownedChallenges: res.data.owned,
                 joinedChallenges: res.data.joined
             })
+            console.log(this.state.joinedChallenges);
+            console.log(this.state.ownedChallenges);
         })
+    }
 
+    getPublicChallenges() {
+
+    }
+
+    enrollInChallenge(challengeId) {
+        axios.get(`${config.api}/enrollUserInChallenge?challenge=${challengeId}&user=${this.props.userId}`).then(res => {
+            //TODO: Display request result; update challenges list
+        })
     }
 
 
@@ -57,7 +70,7 @@ class Challenges extends React.Component {
                         {this.state.ownedChallenges.map(challenge => (
                             <div>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>
-                                {challenge.challengeName} <br />
+                                    {challenge.challengeName} <br />
                                 </a>
                             </div>
                         ))}
@@ -65,9 +78,13 @@ class Challenges extends React.Component {
                     Joined Challenges: <br />
                         {this.state.joinedChallenges.map(challenge => (
                             <div>
-                                challenge.challengeName <br />
+                                <a href={`/dashboard?challenge=${challenge.challengeId}`}>
+                                    {challenge.challengeName}
+                                </a><br />
                             </div>
                         ))}
+                        <br /><br />
+                        Available Challenges: This is not yet implemented!
                     </p>
                 </div>
 
