@@ -91,6 +91,7 @@ app.get("/enrollUserInChallenge", function (req, res) {
     }
 })
 
+
 app.get("/createChallenge", function (req, res) {
     //TODO: This receives an Authorization header, but doesn't verify it
 
@@ -120,6 +121,17 @@ app.get("/getUserChallenges", function (req, res) {
     })
 })
 
+app.get("/updateChallengeData", function (req, res) {
+    if(req.query && req.query.challengeId){
+        console.log(req.query);
+        //note: this is a little different than other things, in that we're sending the entire req.query
+        challengeDataFunctions.updateChallengeData(req.query.challengeId, req.query).then(response => {
+            if(response){
+                res.send(response);
+            }
+        })
+    }
+})
 
 app.get("/getUserChallengeData", function (req, res) {
     console.log("1");
@@ -140,6 +152,7 @@ app.get("/getUserChallengeData", function (req, res) {
 )
 
 app.get("/getChallengeData", function (req, res) {
+    console.log("challenge data");
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
         if (allowedOrigins.indexOf(origin) > -1) {

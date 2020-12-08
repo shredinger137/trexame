@@ -4,6 +4,7 @@ import '../components/Signup';
 import { config } from "../config.js";
 import NewChallenge from '../components/NewChallenge';
 import '../css/modal.css';
+import '../css/common.css';
 
 
 class Challenges extends React.Component {
@@ -70,7 +71,7 @@ class Challenges extends React.Component {
                         {this.state.ownedChallenges.map(challenge => (
                             <div>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>
-                                    {challenge.challengeName} <br />
+                                    {challenge.challengeName} <a href={`/challenge-admin?challenge=${challenge.challengeId}`}>[Admin]</a>
                                 </a>
                             </div>
                         ))}

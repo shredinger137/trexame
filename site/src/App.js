@@ -17,6 +17,7 @@ import Header from './components/Header';
 import Home from './components/Home';
 import Login from './components/Login';
 import Challenges from './pages/Challenges';
+import Admin from './pages/Admin';
 
 
 var jwt = require('jsonwebtoken');
@@ -102,6 +103,10 @@ class App extends React.Component {
                       username={this.state.username}
                       userId={this.state.userId}
                     />
+                  </Route>
+                  <Route path="/challenge-admin">
+                    <Admin
+                      />
                   </Route>
                   <Route path="/stats" component={Stats} />
                   <Route path="/challenges"

@@ -21,7 +21,26 @@ module.exports = {
     getNewId: getNewId,
     createNewChallenge: createNewChallenge,
     getChallengeData: getChallengeData,
-    enrollUserInChallenge: enrollUserInChallenge
+    enrollUserInChallenge: enrollUserInChallenge,
+    updateChallengeData: updateChallengeData
+}
+
+async function updateChallengeData(challengeId, updatedData){
+    //we're assuming that the data passed contains only challengeId and updated data;
+    //if this changes later, we'll have to remove any non-updating stuff from the request or
+    //rethink how the request sends
+
+    delete updatedData.challengeId;
+
+    try {
+        dbConnection.collection("challenges").updateOne({challengeId: challengeId}, {$set: updatedData}, {upsert: true})
+    }
+    catch(err) {
+        throw err;
+    }
+    finally {
+        return true;
+    }
 }
 
 async function createNewChallenge(challengeName, targetMiles, ownerId, public) {

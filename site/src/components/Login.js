@@ -36,7 +36,7 @@ class Login extends React.Component {
 
       <div className="loginWrapper">
         <h3>Log In</h3><br />
-
+      
         <form onSubmit={this.submitLogin.bind(this)}>
           <div className="form grid-2 formWrapper" style={{ margin: "0 auto" }}>
             <label>
