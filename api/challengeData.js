@@ -22,8 +22,10 @@ module.exports = {
     createNewChallenge: createNewChallenge,
     getChallengeData: getChallengeData,
     enrollUserInChallenge: enrollUserInChallenge,
-    updateChallengeData: updateChallengeData
+    updateChallengeData: updateChallengeData,
+    getAllChallenges: getAllChallenges
 }
+
 
 async function updateChallengeData(challengeId, updatedData){
     //we're assuming that the data passed contains only challengeId and updated data;
@@ -147,6 +149,27 @@ async function getChallengeData(challengeId) {
     if (dbConnection) {
         try {
             var challengeData = await dbConnection.collection("challenges").findOne({ challengeId: challengeId });
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+        if (challengeData) {
+            return challengeData;
+        } else {
+            return false;
+        }
+
+    } else {
+        return false;
+    }
+
+}
+
+async function getAllChallenges() {
+
+    if (dbConnection) {
+        try {
+            var challengeData = await dbConnection.collection("challenges").find({}, {projection: {_id: 0, ownerId: 0, participants: 0}}).toArray();
         } catch (err) {
             console.log(err);
             return false;

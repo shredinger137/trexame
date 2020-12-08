@@ -11,11 +11,13 @@ class Challenges extends React.Component {
     state = {
         ownedChallenges: [],
         joinedChallenges: [],
+        notEnrolled: [],
         showNewChallenge: false
     };
 
     componentDidMount() {
         this.getUserChallenges();
+        this.getAllChallenges();
     }
 
     componentDidUpdate() {
@@ -26,6 +28,15 @@ class Challenges extends React.Component {
         this.setState({ showNewChallenge: false });
     }
 
+    getAllChallenges(){
+        var otherChallenges = [];
+        axios.get(`${config.api}/getAllChallenges`).then(res => {
+            for(var challenge of res.data){
+                console.log(challenge);
+            }
+        })
+    }
+
     getUserChallenges() {
         //TODO: Get and list both owned and participating challenges.
         //API does not respond with joinedChallenges yet.
@@ -33,10 +44,10 @@ class Challenges extends React.Component {
         axios.get(`${config.api}/getUserChallenges?id=${this.props.userId}`).then(res => {
             this.setState({
                 ownedChallenges: res.data.owned,
-                joinedChallenges: res.data.joined
+                joinedChallenges: res.data.joined,
+                notEnrolled: res.data.notEnrolled
             })
-            console.log(this.state.joinedChallenges);
-            console.log(this.state.ownedChallenges);
+            console.log(res.data);
         })
     }
 
@@ -46,7 +57,8 @@ class Challenges extends React.Component {
 
     enrollInChallenge(challengeId) {
         axios.get(`${config.api}/enrollUserInChallenge?challenge=${challengeId}&user=${this.props.userId}`).then(res => {
-            //TODO: Display request result; update challenges list
+            console.log(res);
+            this.getUserChallenges();
         })
     }
 
@@ -85,7 +97,15 @@ class Challenges extends React.Component {
                             </div>
                         ))}
                         <br /><br />
-                        Available Challenges: This is not yet implemented!
+                        Available Challenges: <br />
+                        {this.state.notEnrolled.map(challenge => (
+                            <div>
+                                <a href={`/dashboard?challenge=${challenge.challengeId}`}>
+                                    {challenge.challengeName}
+                                </a><span style={{cursor: "pointer"}} onClick={() => {this.enrollInChallenge(challenge.challengeId)}}>{` `}[Enroll]</span><br />
+                            </div>
+                        ))}
+                        <br /><br />
                     </p>
                 </div>
 

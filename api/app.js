@@ -6,6 +6,7 @@ var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Se
 var jwt = require('jsonwebtoken');
 var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
+const { createUserAccount } = require("./userAccount");
 
 const secret = "temp"; //TODO: this changes to a config thing later
 var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
@@ -107,14 +108,14 @@ app.get("/createChallenge", function (req, res) {
 })
 
 
-app.get("/getUserChallenges", function (req, res) {
+app.get("/getAllChallenges", function (req, res) {
+    challengeDataFunctions.getAllChallenges().then(response => {
+        console.log(response);
+        res.send(response);
+    })
+})
 
-    var origin = req.headers.origin;
-    if (req.headers.origin && req.headers.origin != undefined) {
-        if (allowedOrigins.indexOf(origin) > -1) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
-        }
-    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+app.get("/getUserChallenges", function (req, res) {
 
     userAccountFunctions.getUserChallenges(req.query.id).then(response => {
         res.send(response);

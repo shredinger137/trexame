@@ -207,28 +207,46 @@ async function getNewId() {
 }
 
 
+//TODO: Refactor this in proper try/catch/finally format
 
 async function getUserChallenges(id) {
+  //TODO: return empty array in case where there's no value
+  var allChallenges = {};
+
   if (dbConnection) {
     try {
       var userOwnedChallenges = await dbConnection.collection("challenges").find({ ownerId: id }).toArray();
+      var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: { $in: [id] } }).toArray();
+      var userOtherChallenges = await dbConnection.collection("challenges").find({ ownerId: {$ne: id}, participants: { $nin: [id] }}).toArray();
+
     } catch (err) {
       console.log(err);
-      return [false, err];
+      return false;
     }
-    if (userOwnedChallenges) {
-      try {
-        var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: { $in: [id] } }).toArray();
-      } catch (err) {
-        console.log(err);
-        return [false, err];
-      }
-      if (userJoinedChallenges) {
-        var allChallenges = { owned: userOwnedChallenges, joined: userJoinedChallenges };
-        return allChallenges;
+
+    finally {
+      if(userOwnedChallenges){
+        allChallenges["owned"] = userOwnedChallenges;
       } else {
-        return "error"
+        allChallenges["owned"] = [];
       }
+
+      if(userJoinedChallenges){
+        allChallenges["joined"] = userJoinedChallenges;
+      } else {
+        allChallenges["joined"] = [];
+      }
+
+      if(userOtherChallenges){
+        allChallenges["notEnrolled"] = userOtherChallenges;
+      } else {
+        allChallenges["notEnrolled"] = [];
+      }
+
+      console.log(userOtherChallenges);
+
+      return allChallenges;
+
     }
 
   }
