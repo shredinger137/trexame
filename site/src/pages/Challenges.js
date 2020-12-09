@@ -17,7 +17,6 @@ class Challenges extends React.Component {
 
     componentDidMount() {
         this.getUserChallenges();
-        this.getAllChallenges();
     }
 
     componentDidUpdate() {
@@ -28,14 +27,6 @@ class Challenges extends React.Component {
         this.setState({ showNewChallenge: false });
     }
 
-    getAllChallenges(){
-        var otherChallenges = [];
-        axios.get(`${config.api}/getAllChallenges`).then(res => {
-            for(var challenge of res.data){
-                console.log(challenge);
-            }
-        })
-    }
 
     getUserChallenges() {
         //TODO: Get and list both owned and participating challenges.

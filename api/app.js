@@ -11,16 +11,16 @@ const { createUserAccount } = require("./userAccount");
 const secret = "temp"; //TODO: this changes to a config thing later
 var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 
     if ('OPTIONS' === req.method) {
-      res.send(200);
+        res.send(200);
     }
     else {
-      next();
+        next();
     }
 });
 
@@ -80,10 +80,10 @@ app.get("/signup", function (req, res) {
 });
 
 app.get("/enrollUserInChallenge", function (req, res) {
-    if(req && req.query.challenge && req.query.user){
+    if (req && req.query.challenge && req.query.user) {
         challengeDataFunctions.enrollUserInChallenge(req.query.challenge, req.query.user).then(result => {
             console.log(result);
-            if(result){
+            if (result) {
                 res.send(true);
             } else {
                 res.send(false);
@@ -92,6 +92,24 @@ app.get("/enrollUserInChallenge", function (req, res) {
     }
 })
 
+
+app.get("/submitNewAchievement", function (req, res) {
+    if (req && req.query && req.query.challengeId) {
+        console.log("new2");
+        challengeDataFunctions.addNewAchievement(req.query.challengeId, req.query).then(response => {
+            res.send(response);
+        })
+    } else {
+        res.send(false);
+    }
+}
+)
+
+
+app.post('/uploadImages', function(req, res){
+    //TODO: Get image, return URL to image
+
+})
 
 app.get("/createChallenge", function (req, res) {
     //TODO: This receives an Authorization header, but doesn't verify it
@@ -123,11 +141,11 @@ app.get("/getUserChallenges", function (req, res) {
 })
 
 app.get("/updateChallengeData", function (req, res) {
-    if(req.query && req.query.challengeId){
+    if (req.query && req.query.challengeId) {
         console.log(req.query);
         //note: this is a little different than other things, in that we're sending the entire req.query
         challengeDataFunctions.updateChallengeData(req.query.challengeId, req.query).then(response => {
-            if(response){
+            if (response) {
                 res.send(response);
             }
         })

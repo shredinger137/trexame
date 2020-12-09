@@ -23,7 +23,8 @@ module.exports = {
     getChallengeData: getChallengeData,
     enrollUserInChallenge: enrollUserInChallenge,
     updateChallengeData: updateChallengeData,
-    getAllChallenges: getAllChallenges
+    getAllChallenges: getAllChallenges,
+    addNewAchievement: addNewAchievement
 }
 
 
@@ -163,6 +164,32 @@ async function getChallengeData(challengeId) {
         return false;
     }
 
+}
+
+async function addNewAchievement(challengeId, query){
+    console.log(query);
+    getChallengeData(challengeId).then(challengeData => {
+        delete query.challengeId;
+        //again - we took the whole query, so we have to clean it up by removing other stuff
+        //this should give us an object with all the relevant keys
+        if(challengeData.achievements){
+            var newAchievements = challengeData.achievements;
+            newAchievements.push(query);
+        } else {
+            var newAchievements = [query];
+        }
+        try {
+            console.log("try1");
+            dbConnection.collection("challenges").updateOne({challengeId: challengeId}, {$set: {achievements: newAchievements}}, {upsert: true});
+
+        }
+        catch (err) {
+            throw err;
+        }
+        finally {
+            return true;
+        }
+    })
 }
 
 async function getAllChallenges() {

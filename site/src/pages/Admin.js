@@ -6,35 +6,39 @@ class Admin extends React.Component {
 
   state = {
     challengeId: "",
-    challengeData: {}
+    challengeData: {},
+    challengeAchievements: []
   }
 
 
-  componentDidMount(){
+  componentDidMount() {
     this.getChallengeId();
   }
 
-  componentDidUpdate(prevprops, prevstate){
-    if(prevstate.challengeId != this.state.challengeId){
+  componentDidUpdate(prevprops, prevstate) {
+    if (prevstate.challengeId != this.state.challengeId) {
       this.getChallengeData();
     }
   }
 
-  getChallengeId(){
-      const params = new URLSearchParams(window.location.search);
-      if (params && params.get("challenge")) {
-          this.setState({challengeId: params.get("challenge")});
-          this.getChallengeData();
+  getChallengeId() {
+    const params = new URLSearchParams(window.location.search);
+    if (params && params.get("challenge")) {
+      this.setState({ challengeId: params.get("challenge") });
+      this.getChallengeData();
     } else return false;
   }
 
-  getChallengeData(){
+  getChallengeData() {
     axios.get(`${config.api}/getChallengeData?challengeId=${this.state.challengeId}&admin=true`).then(res => {
-      this.setState({challengeData: res.data})
+      this.setState({ challengeData: res.data });
+      if (res.data.achievements) {
+        this.setState({ challengeAchievements: res.data.achievements });
+      }
     })
   }
 
-  saveData(e){
+  saveData(e) {
     e.preventDefault();
     var challengeDataUpdated = `challengeName=${document.getElementById("name").value}&targetMiles=${document.getElementById("miles").value}&description=${document.getElementById("description").value}`;
     console.log(challengeDataUpdated);
@@ -42,6 +46,20 @@ class Admin extends React.Component {
 
     })
 
+  }
+
+  //TODO: Handle response on both of these.
+
+  submitNewAchievement(e) {
+    console.log("new");
+    e.preventDefault();
+    var newAchivementData = `name=${document.getElementById("newAchievementName").value}&distance=${document.getElementById("newAchievementDistance").value}&description=${document.getElementById("newAchievementDescription").value}`;
+    axios.get(`${config.api}/submitNewAchievement?challengeId=${this.state.challengeId}&${encodeURI(newAchivementData)}`).then(res => {
+      this.getChallengeData();
+      document.getElementById("newAchievementName").value = "";
+      document.getElementById("newAchievementDistance").value = "";
+      document.getElementById("newAchievementDescription").value = "";
+    })
   }
 
   render() {
@@ -54,7 +72,7 @@ class Admin extends React.Component {
             <label>
               Challenge Name:
             </label>
-            <input type="text" id="name" defaultValue={this.state.challengeData.challengeName}/>
+            <input type="text" id="name" defaultValue={this.state.challengeData.challengeName} />
             <label>Target Miles:</label>
             <input type="number" id="miles" defaultValue={this.state.challengeData.targetMiles}></input>
             <label>Description:</label>
@@ -62,9 +80,44 @@ class Admin extends React.Component {
           </div>
           <br />
           <input type="submit" value="Update" />
+          </form>
+          <br /><br />
+          <p>Challenge Achievements</p>
+          <br />
+          <form id="newAchivementForm" onSubmit={this.submitNewAchievement.bind(this)}>
+            <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
+              <label>Name:</label>
+              <input id="newAchievementName">
+              </input>
+              <label>Distance (Miles): </label>
+              <input type="number" id="newAchievementDistance"></input>
+              <label>Description:</label>
+              <textarea id="newAchievementDescription"></textarea>
+              <label>Image:</label>
+              <input type="file"></input>
+            </div>
+            <input type="submit" value="Add New Achivement" />
+            <br />
+          
+          </form>
+          {this.state.challengeAchievements.map(achievement => (
+            <form>
+              <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
+                <label>Name:</label>
+                <input id="newAchievementName" defaultValue={achievement.name}>
+                </input>
+                <label>Distance (Miles): </label>
+                <input type="number" defaultValue={achievement.distance}></input>
+                <label>Description:</label>
+                <textarea defaultValue={achievement.description}></textarea>
+                <label>Image:</label>
+              </div>
+              <br />
+            </form>
+          ))}
 
-        </form>
-      </div>
+     
+      </div >
     );
   }
 }
