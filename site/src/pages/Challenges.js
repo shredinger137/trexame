@@ -17,6 +17,7 @@ class Challenges extends React.Component {
 
     componentDidMount() {
         this.getUserChallenges();
+
     }
 
     componentDidUpdate() {

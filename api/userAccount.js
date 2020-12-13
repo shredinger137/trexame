@@ -58,7 +58,8 @@ module.exports = {
 }
 
 
-function verifyToken(token){
+async function verifyToken(token){
+  console.log(token);
     if (!token){
         return false;
     }
@@ -67,6 +68,7 @@ function verifyToken(token){
         return false;
 
         //not totally sure if 'true' means it's actually verified or not
+        console.log(true);
         return true;
     })
 }

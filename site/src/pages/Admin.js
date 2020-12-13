@@ -7,7 +7,8 @@ class Admin extends React.Component {
   state = {
     challengeId: "",
     challengeData: {},
-    challengeAchievements: []
+    challengeAchievements: [],
+    newSubmissionImage: ""
   }
 
 
@@ -53,12 +54,32 @@ class Admin extends React.Component {
   submitNewAchievement(e) {
     console.log("new");
     e.preventDefault();
-    var newAchivementData = `name=${document.getElementById("newAchievementName").value}&distance=${document.getElementById("newAchievementDistance").value}&description=${document.getElementById("newAchievementDescription").value}`;
+    var newAchivementData = `name=${document.getElementById("newAchievementName").value}&distance=${document.getElementById("newAchievementDistance").value}&description=${document.getElementById("newAchievementDescription").value}&image=${this.state.newSubmissionImage}`;
     axios.get(`${config.api}/submitNewAchievement?challengeId=${this.state.challengeId}&${encodeURI(newAchivementData)}`).then(res => {
       this.getChallengeData();
       document.getElementById("newAchievementName").value = "";
       document.getElementById("newAchievementDistance").value = "";
       document.getElementById("newAchievementDescription").value = "";
+    })
+  }
+
+  handleImageUpload(e) {
+  
+    e.preventDefault();
+    var file = e.target.files[0];
+    const data = new FormData();
+    data.append('file', file);
+    data.append('challengeId', this.state.challengeId);
+    const headerConfig = {
+      headers: {
+        'content-type': 'multipart/form-data' 
+      }
+    };
+
+    axios.post(`${config.api}/uploadImage?challengeId=${this.state.challengeId}`, data, headerConfig).then(res => {
+      if(res && res.data){
+        this.setState({newSubmissionImage: res.data});
+      }
     })
   }
 
@@ -87,30 +108,41 @@ class Admin extends React.Component {
           <form id="newAchivementForm" onSubmit={this.submitNewAchievement.bind(this)}>
             <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
               <label>Name:</label>
-              <input id="newAchievementName">
+              <input id="newAchievementName" required>
               </input>
               <label>Distance (Miles): </label>
-              <input type="number" id="newAchievementDistance"></input>
+              <input type="number" id="newAchievementDistance" required></input>
               <label>Description:</label>
               <textarea id="newAchievementDescription"></textarea>
               <label>Image:</label>
-              <input type="file"></input>
-            </div>
+              <input type="file" onChange={this.handleImageUpload.bind(this)} accept="image/png, image/jpeg" required></input>
+                          </div>
+
+
             <input type="submit" value="Add New Achivement" />
             <br />
           
           </form>
+          {this.state.newSubmissionImage ? 
+              <div className="achievementsItemWrapper">
+                <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${this.state.newSubmissionImage}`} style={{width: "150px"}}></img>
+              </div>
+                 : null}
           {this.state.challengeAchievements.map(achievement => (
             <form>
               <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
                 <label>Name:</label>
-                <input id="newAchievementName" defaultValue={achievement.name}>
-                </input>
+                <span style={{textAlign: "left"}}>
+                {achievement.name}
+                </span>
                 <label>Distance (Miles): </label>
-                <input type="number" defaultValue={achievement.distance}></input>
+                <span style={{textAlign: "left"}}>
+                {achievement.distance}
+                </span>
                 <label>Description:</label>
-                <textarea defaultValue={achievement.description}></textarea>
+                <span style={{textAlign: "left"}}>{achievement.description}</span>
                 <label>Image:</label>
+                <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${achievement.image}`} style={{width: "150px"}} />
               </div>
               <br />
             </form>

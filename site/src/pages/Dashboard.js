@@ -89,8 +89,10 @@ class Dashboard extends React.Component {
         axios.get(`${config.api}/getChallengeData?challengeId=${challengeId}`).then(res => {
             this.setState({
                 challengeName: res.data.challengeName,
-                targetMiles: res.data.targetMiles
+                targetMiles: res.data.targetMiles,
+                challengeAchievements: res.data.achievements
             });
+            console.log(res.data.achievements);
           
         })
     }
@@ -206,7 +208,12 @@ class Dashboard extends React.Component {
                     <div id="notFound" style={{ display: "none" }}><p>The requested ID was not found. Please check your email for the correct link, or write to <a href="mailto:admin@rrderby.org">admin@rrderby.org</a> for help.</p></div>
                     <br />
                     <h3>Achievements: {this.state.marathonName}</h3>
-                    <Achievements miles={this.state.progressTotal} marathon={this.state.userData.marathon} />
+                    <Achievements 
+                        miles={this.state.progressTotal} 
+                        marathon={this.state.userData.marathon}
+                        achievements={this.state.challengeAchievements}
+                        challengeId={this.state.challengeId} 
+                    />
                     <br /><br />
                 </div>
             </div>

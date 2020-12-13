@@ -2,10 +2,9 @@ var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Se
 var config = require("./config.js");
 var express = require("express");
 var app = express();
-var passwordHash = require('password-hash');
-var jwt = require('jsonwebtoken');
 var userAccountFunctions = require('./userAccount');
 const { getUserData } = require('./userAccount');
+const multer = require('multer');
 
 var dbConnection = null;
 MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true }, function (err, client) {
@@ -24,7 +23,14 @@ module.exports = {
     enrollUserInChallenge: enrollUserInChallenge,
     updateChallengeData: updateChallengeData,
     getAllChallenges: getAllChallenges,
-    addNewAchievement: addNewAchievement
+    addNewAchievement: addNewAchievement,
+    updateAchievements: updateAchievements
+}
+
+
+async function updateAchievements(challengeId, achievementUpdate){
+
+
 }
 
 
@@ -166,10 +172,16 @@ async function getChallengeData(challengeId) {
 
 }
 
+
+
 async function addNewAchievement(challengeId, query){
-    console.log(query);
+    
+    var id = Math.random().toString(36).slice(4);
+    query['ident'] = id;
+
     getChallengeData(challengeId).then(challengeData => {
         delete query.challengeId;
+
         //again - we took the whole query, so we have to clean it up by removing other stuff
         //this should give us an object with all the relevant keys
         if(challengeData.achievements){
@@ -179,9 +191,7 @@ async function addNewAchievement(challengeId, query){
             var newAchievements = [query];
         }
         try {
-            console.log("try1");
             dbConnection.collection("challenges").updateOne({challengeId: challengeId}, {$set: {achievements: newAchievements}}, {upsert: true});
-
         }
         catch (err) {
             throw err;

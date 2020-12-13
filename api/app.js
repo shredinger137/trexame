@@ -1,4 +1,5 @@
 var express = require("express");
+const router = express.Router();
 var app = express();
 var config = require("./config.js");
 var cron = require("node-cron");
@@ -6,10 +7,14 @@ var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Se
 var jwt = require('jsonwebtoken');
 var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
-const { createUserAccount } = require("./userAccount");
+const multer = require('multer');
+const path = require("path");
+const { createNewChallenge } = require("./challengeData");
 
 const secret = "temp"; //TODO: this changes to a config thing later
 var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
+
+
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -106,22 +111,50 @@ app.get("/submitNewAchievement", function (req, res) {
 )
 
 
-app.post('/uploadImages', function(req, res){
-    //TODO: Get image, return URL to image
+app.post('/uploadImage', function (req, res) {
 
-})
+    var rand = Math.floor(Math.random() * 1000);
+    var fileName;
+
+    const storage = multer.diskStorage({
+        destination: `${config.uploadDirectory}/${req.query.challengeId}`,
+        filename: function (req, file, cb) {
+            fileName = rand + file.originalname;
+            cb(null, fileName);
+        }
+    });
+    
+    const upload = multer({
+        storage: storage,
+        limits: { fileSize: 1000000 },
+    }).single("file");
+
+    console.log("uploading");
+    upload(req, res, err => {
+        if (!err) return res.send(fileName).end();
+    })
+}
+)
 
 app.get("/createChallenge", function (req, res) {
-    //TODO: This receives an Authorization header, but doesn't verify it
+    var token = req.headers['authorization'];
+    if(!token) return res.send("token error");
 
-    if (req && req.query.name && req.query.miles && req.query.id) {
-        challengeDataFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
-            res.send(response);
-        });
-        res.send("success");
-    } else {
-        res.send("err");
-    }
+    jwt.verify(token, config.tokenSecret, function(err, decoded) {
+        if (err) return res.send("token error");
+
+        if (req && req.query.name && req.query.miles && req.query.id && decoded.id == req.query.id) {
+            challengeDataFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
+                res.send(response);
+            });
+            res.send("success");
+        } else {
+            res.send("error");
+        }   
+        
+
+    })
+
 
 })
 
@@ -247,11 +280,6 @@ app.get("/login", function (req, res) {
 
 }
 )
-
-
-//this should be gone; insead, use token verification on each API call, and just read the cookie for ID
-//since this requires the token validation on the frontend it's not partciularly secure
-//TODO
 
 app.get("/verifytoken", function (req, res) {
     var origin = req.headers.origin;

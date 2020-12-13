@@ -40,6 +40,21 @@ class App extends React.Component {
 
   componentDidMount() {
     this.checkLogin();
+
+    //TODO: This is a placeholder that doesn't do anything.
+    //In the future, we want to check if we're on a subdomain,
+    //then potentially set challengeId based on it. We can also
+    //consider using it to have 'creat account' automatically enroll.
+
+    let host = window.location.host;
+    let parts = host.split(".");
+    let subdomain = "";
+    // If we get more than 3 parts, then we have a subdomain
+    // INFO: This could be 4, if you have a co.uk TLD or something like that.
+    if (parts[0] && parts[0] != "trexa" && parts[0] != "www") {
+      subdomain = parts[0];
+      console.log(subdomain);
+    }
   }
 
   componentDidUpdate() {
@@ -84,7 +99,7 @@ class App extends React.Component {
 
 
   render() {
- 
+
     return (
       <div className="App">
         <Header
@@ -96,43 +111,43 @@ class App extends React.Component {
         <BrowserRouter>
           <div>
             <Switch>
-                <>
-                  <Route path="/dashboard">
-                    <Dashboard
+              <>
+                <Route path="/dashboard">
+                  <Dashboard
+                    checkLogin={this.checkLogin}
+                    username={this.state.username}
+                    userId={this.state.userId}
+                  />
+                </Route>
+                <Route path="/challenge-admin">
+                  <Admin
+                  />
+                </Route>
+                <Route path="/stats" component={Stats} />
+                <Route path="/challenges"
+                  component={() =>
+                    <Challenges userId={this.state.userId} />
+                  }
+                />
+                <Route path="/signup"
+                  component={() =>
+                    <Signup />
+                  }
+                />
+                <Route path="/login"
+                  component={() =>
+                    <Login
                       checkLogin={this.checkLogin}
-                      username={this.state.username}
-                      userId={this.state.userId}
-                    />
-                  </Route>
-                  <Route path="/challenge-admin">
-                    <Admin
-                      />
-                  </Route>
-                  <Route path="/stats" component={Stats} />
-                  <Route path="/challenges"
-                    component={() =>
-                      <Challenges userId={this.state.userId} />
-                    }
-                  />
-                  <Route path="/signup"
-                    component={() =>
-                      <Signup />
-                    }
-                  />
-                  <Route path="/login"
-                    component={() =>
-                      <Login
-                        checkLogin={this.checkLogin}
-                        isLoggedIn={this.state.isLoggedIn}
-                        username={this.state.username} />
-                    }
-                  />
-                  <Route exact path="/" component={Home} />
+                      isLoggedIn={this.state.isLoggedIn}
+                      username={this.state.username} />
+                  }
+                />
+                <Route exact path="/" component={Home} />
 
 
-                </>
+              </>
 
-              <Route path="/" component={() =>  <Home isLoggedIn={this.state.isLoggedIn} /> } />
+              <Route path="/" component={() => <Home isLoggedIn={this.state.isLoggedIn} />} />
             </Switch>
           </div>
         </BrowserRouter>

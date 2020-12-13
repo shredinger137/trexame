@@ -26,7 +26,7 @@ class NewChallenge extends React.Component {
     var openEnrollment = document.getElementById('openEnrollment').value;
 
     axios.get(`${config.api}/createChallenge?name=${marathonName}&miles=${targetMiles}&id=${this.props.userId}&pubic=${openEnrollment}`  , { headers: {
-      'Authorization': `token ${Cookies.get('token')}`
+      'Authorization': `${Cookies.get('token')}`
     }}).then(res => {
       //TODO: Respond to resolution
       console.log(res);
