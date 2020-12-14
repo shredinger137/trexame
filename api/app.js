@@ -100,7 +100,6 @@ app.get("/enrollUserInChallenge", function (req, res) {
 
 app.get("/submitNewAchievement", function (req, res) {
     if (req && req.query && req.query.challengeId) {
-        console.log("new2");
         challengeDataFunctions.addNewAchievement(req.query.challengeId, req.query).then(response => {
             res.send(response);
         })
@@ -110,8 +109,20 @@ app.get("/submitNewAchievement", function (req, res) {
 }
 )
 
+app.get("/deleteAchievement", function (req, res) {
+    if (req && req.query && req.query.achievementId && req.query.challengeId) {
+        challengeDataFunctions.deleteAchievement(req.query.challengeId, req.query.achievementId).then(response => {
+            res.send(response);
+        })
+    } else {
+        res.send(false);
+    }
+}
+)
 
 app.post('/uploadImage', function (req, res) {
+
+    
 
     var rand = Math.floor(Math.random() * 1000);
     var fileName;
@@ -188,12 +199,6 @@ app.get("/updateChallengeData", function (req, res) {
 app.get("/getUserChallengeData", function (req, res) {
     console.log("1");
 
-    var origin = req.headers.origin;
-    if (req.headers.origin && req.headers.origin != undefined) {
-        if (allowedOrigins.indexOf(origin) > -1) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
-        }
-    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
     console.log(req.query);
     if (req.query && req.query.user && req.query.challenge) {
         userAccountFunctions.getUserChallengeData(req.query.user, req.query.challenge).then(response => {
@@ -319,10 +324,6 @@ app.get("/userdata", function (req, res) {
 
 
 app.get("/updateprogress", function (req, res) {
-
-
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "text/plain");
 
     var id = req.query.user;
     var distance = req.query.distance;

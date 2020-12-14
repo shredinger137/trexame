@@ -22,7 +22,7 @@ class Dashboard extends React.Component {
         progressSorted: [],
         progressTotal: 0,
         progressTotalPercent: 0,
-        marathonDistance: 42,
+        marathonDistance: 0,
         marathonName: "",
         challengeId: ""
     };
@@ -89,7 +89,7 @@ class Dashboard extends React.Component {
         axios.get(`${config.api}/getChallengeData?challengeId=${challengeId}`).then(res => {
             this.setState({
                 challengeName: res.data.challengeName,
-                targetMiles: res.data.targetMiles,
+                marathonDistance: res.data.targetMiles,
                 challengeAchievements: res.data.achievements
             });
             console.log(res.data.achievements);
@@ -159,7 +159,7 @@ class Dashboard extends React.Component {
                     </div>
                     <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
                     <br />
-                    <span>Your Marathon: {this.state.challengeName} ({this.state.targetMiles} miles)</span>
+                    <span>Your Marathon: {this.state.challengeName} ({this.state.marathonDistance} miles)</span>
                     <br />
                     <br />
                     <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>

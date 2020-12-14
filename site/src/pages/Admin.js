@@ -64,7 +64,7 @@ class Admin extends React.Component {
   }
 
   handleImageUpload(e) {
-  
+
     e.preventDefault();
     var file = e.target.files[0];
     const data = new FormData();
@@ -72,15 +72,24 @@ class Admin extends React.Component {
     data.append('challengeId', this.state.challengeId);
     const headerConfig = {
       headers: {
-        'content-type': 'multipart/form-data' 
+        'content-type': 'multipart/form-data'
       }
     };
 
     axios.post(`${config.api}/uploadImage?challengeId=${this.state.challengeId}`, data, headerConfig).then(res => {
-      if(res && res.data){
-        this.setState({newSubmissionImage: res.data});
+      if (res && res.data) {
+        this.setState({ newSubmissionImage: res.data });
       }
     })
+  }
+
+  deleteAchievement(achievementId) {
+    console.log(achievementId);
+    axios.get(`${config.api}/deleteAchievement?challengeId=${this.state.challengeId}&achievementId=${achievementId}`).then(res => {
+      //console.log(res);
+      this.getChallengeData();
+    })
+
   }
 
   render() {
@@ -101,54 +110,56 @@ class Admin extends React.Component {
           </div>
           <br />
           <input type="submit" value="Update" />
-          </form>
-          <br /><br />
-          <p>Challenge Achievements</p>
+        </form>
+        <br /><br />
+        <p>Challenge Achievements</p>
+        <br />
+        <form id="newAchivementForm" onSubmit={this.submitNewAchievement.bind(this)}>
+          <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
+            <label>Name:</label>
+            <input id="newAchievementName" required>
+            </input>
+            <label>Distance (Miles): </label>
+            <input type="number" id="newAchievementDistance" required></input>
+            <label>Description:</label>
+            <textarea id="newAchievementDescription"></textarea>
+            <label>Image:</label>
+            <input type="file" onChange={this.handleImageUpload.bind(this)} accept="image/png, image/jpeg" required></input>
+          </div>
+
+
+          <input type="submit" value="Add New Achivement" />
           <br />
-          <form id="newAchivementForm" onSubmit={this.submitNewAchievement.bind(this)}>
+
+        </form>
+        {this.state.newSubmissionImage ?
+          <div className="achievementsItemWrapper">
+            <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${this.state.newSubmissionImage}`} style={{ width: "150px" }}></img>
+          </div>
+          : null}
+        {this.state.challengeAchievements.map(achievement => (
+          <form>
             <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
               <label>Name:</label>
-              <input id="newAchievementName" required>
-              </input>
-              <label>Distance (Miles): </label>
-              <input type="number" id="newAchievementDistance" required></input>
-              <label>Description:</label>
-              <textarea id="newAchievementDescription"></textarea>
-              <label>Image:</label>
-              <input type="file" onChange={this.handleImageUpload.bind(this)} accept="image/png, image/jpeg" required></input>
-                          </div>
-
-
-            <input type="submit" value="Add New Achivement" />
-            <br />
-          
-          </form>
-          {this.state.newSubmissionImage ? 
-              <div className="achievementsItemWrapper">
-                <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${this.state.newSubmissionImage}`} style={{width: "150px"}}></img>
-              </div>
-                 : null}
-          {this.state.challengeAchievements.map(achievement => (
-            <form>
-              <div className="achievementEditWrapper form grid-2 formWrapper" style={{ margin: "0 auto", width: "80vw" }}>
-                <label>Name:</label>
-                <span style={{textAlign: "left"}}>
+              <span style={{ textAlign: "left" }}>
                 {achievement.name}
-                </span>
-                <label>Distance (Miles): </label>
-                <span style={{textAlign: "left"}}>
+              </span>
+              <label>Distance (Miles): </label>
+              <span style={{ textAlign: "left" }}>
                 {achievement.distance}
-                </span>
-                <label>Description:</label>
-                <span style={{textAlign: "left"}}>{achievement.description}</span>
-                <label>Image:</label>
-                <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${achievement.image}`} style={{width: "150px"}} />
-              </div>
-              <br />
-            </form>
-          ))}
+              </span>
+              <label>Description:</label>
+              <span style={{ textAlign: "left" }}>{achievement.description}</span>
+              <label>Image:</label>
+              <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${achievement.image}`} style={{ width: "150px" }} />
+              <label></label>
+              <span style={{ textAlign: "left" }} onClick={() => this.deleteAchievement(achievement.ident)}>Delete</span>
+            </div>
+            <br />
+          </form>
+        ))}
 
-     
+
       </div >
     );
   }

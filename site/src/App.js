@@ -40,21 +40,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.checkLogin();
-
-    //TODO: This is a placeholder that doesn't do anything.
-    //In the future, we want to check if we're on a subdomain,
-    //then potentially set challengeId based on it. We can also
-    //consider using it to have 'creat account' automatically enroll.
-
-    let host = window.location.host;
-    let parts = host.split(".");
-    let subdomain = "";
-    // If we get more than 3 parts, then we have a subdomain
-    // INFO: This could be 4, if you have a co.uk TLD or something like that.
-    if (parts[0] && parts[0] != "trexa" && parts[0] != "www") {
-      subdomain = parts[0];
-      console.log(subdomain);
-    }
   }
 
   componentDidUpdate() {

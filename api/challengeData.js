@@ -24,15 +24,49 @@ module.exports = {
     updateChallengeData: updateChallengeData,
     getAllChallenges: getAllChallenges,
     addNewAchievement: addNewAchievement,
-    updateAchievements: updateAchievements
+    deleteAchievement: deleteAchievement
 }
 
 
-async function updateAchievements(challengeId, achievementUpdate){
+async function deleteAchievement(challengeId, achievementId){
 
+    
+    getChallengeData(challengeId).then(challengeData => {
+        
+        console.log("delete " + achievementId);
 
+        if(challengeData.achievements){
+            var count = 0;
+            var achievements = challengeData.achievements
+            
+            for(var achievement of achievements){
+                if(achievement.ident == achievementId){
+                    achievements.splice(count, 1);
+                    break;
+                }
+                count++;
+            }
+
+        } else {
+            return false;
+        }
+
+       
+
+        try {
+            dbConnection.collection("challenges").updateOne({challengeId: challengeId}, {$set: {achievements: achievements}});
+        }
+        catch(err){
+            console.log(err);
+            return false;
+        }
+        finally {
+            return true;
+        }
+
+        
+    })
 }
-
 
 async function updateChallengeData(challengeId, updatedData){
     //we're assuming that the data passed contains only challengeId and updated data;
@@ -176,6 +210,21 @@ async function getChallengeData(challengeId) {
 
 async function addNewAchievement(challengeId, query){
     
+    function compare(a, b){
+        const distanceA = a.distance;
+        const distanceB = b.distance;
+
+        let comparison = 0;
+
+        if (distanceA > distanceB){
+            comparison = 1;
+        } else {
+            comparison = -1;
+        }
+
+        return comparison;
+    }
+
     var id = Math.random().toString(36).slice(4);
     query['ident'] = id;
 
@@ -187,6 +236,8 @@ async function addNewAchievement(challengeId, query){
         if(challengeData.achievements){
             var newAchievements = challengeData.achievements;
             newAchievements.push(query);
+            newAchievements.sort(compare);
+
         } else {
             var newAchievements = [query];
         }
