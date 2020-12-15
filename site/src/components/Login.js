@@ -11,6 +11,10 @@ import '../css/forms.css';
 
 class Login extends React.Component {
 
+  state = {
+    forgotPassword: false
+  }
+
   submitLogin(e) {
     console.log('submit');
     e.preventDefault();
@@ -35,21 +39,42 @@ class Login extends React.Component {
     return (
 
       <div className="loginWrapper">
-        <h3>Log In</h3><br />
-      
-        <form onSubmit={this.submitLogin.bind(this)}>
-          <div className="form grid-2 formWrapper" style={{ margin: "0 auto" }}>
-            <label>
-              Email Address:
-            </label>
-            <input type="email" id="email" />
-            <label>Password:</label>
-            <input type="password" id="password"></input>
-          </div>
-          <br />
-          <input type="submit" value="Log In" />
+        <div>
+          <h3>Log In</h3><br />
+          {this.props.isLoggedIn ? 
+        
+            null 
+            :
 
-        </form>
+        
+      
+      
+
+          <form onSubmit={this.submitLogin.bind(this)}>
+            <div className="form grid-2 formWrapper grid-1-small" style={{ margin: "0 auto" }}>
+              <label>
+                Email Address:
+            </label>
+              <input type="email" id="email" />
+              <label>Password:</label>
+              <input type="password" id="password"></input>
+            </div>
+            <br />
+            <input type="submit" value="Log In" />
+            <br /><br />
+            <span onClick={() => { this.setState({ forgotPassword: !this.state.forgotPassword }) }} style={{ cursor: "pointer" }}>Reset Password</span>
+          </form>
+           }
+
+          {this.state.forgotPassword ?
+            <div>
+              <p>Put a form here to recover your password </p>
+            </div>
+            :
+            null
+          }
+       
+        </div>
 
       </div>
     );

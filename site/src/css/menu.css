@@ -42,10 +42,9 @@
 
 @media screen and (max-width: 992px) {
 
-    .user {
-        display: none;
+    .menuWrapper {
+        padding-right: 0;
+        padding-left: 0;
     }
-
-
 
   }

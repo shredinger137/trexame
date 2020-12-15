@@ -35,7 +35,7 @@ class Signup extends React.Component {
       <div>
         <h3>Create an Account</h3><br />
         <form onSubmit={this.handleSignupSubmit.bind(this)}>
-          <div className="grid-2 formWrapper loginWrapper">
+          <div className="grid-2 formWrapper loginWrapper grid-1-small">
             <label className="lightText">Name:</label>
             <input type="text" id="name" />
             <label className="lightText">Email:</label>

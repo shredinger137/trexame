@@ -65,6 +65,10 @@ body {
     width: 25vw;
 }
 
+.loginWrapper {
+    max-width: 90vw;
+}
+
 #progress {
     margin: 0 auto;
     width: 75vw;
