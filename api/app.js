@@ -2,7 +2,7 @@ var express = require("express");
 const router = express.Router();
 var app = express();
 var config = require("./config.js");
-var cron = require("node-cron");
+//var cron = require("node-cron");
 var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Server;
 var jwt = require('jsonwebtoken');
 var userAccountFunctions = require('./userAccount');
@@ -46,9 +46,9 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 })
 
 
-cron.schedule("* * * * *", () => {
+//cron.schedule("* * * * *", () => {
     //this will be used for syncing, stats generation
-});
+//});
 
 
 //*****************
