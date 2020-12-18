@@ -41,8 +41,7 @@ class Admin extends React.Component {
 
   saveData(e) {
     e.preventDefault();
-    var challengeDataUpdated = `challengeName=${document.getElementById("name").value}&targetMiles=${document.getElementById("miles").value}&description=${document.getElementById("description").value}`;
-    console.log(challengeDataUpdated);
+    var challengeDataUpdated = `challengeName=${document.getElementById("name").value}&targetMiles=${document.getElementById("miles").value}&targetUnits=${document.getElementById("units").value}&description=${document.getElementById("description").value}`;
     axios.get(`${config.api}/updateChallengeData?challengeId=${this.state.challengeId}&${encodeURI(challengeDataUpdated)}`).then(res => {
 
     })
@@ -60,6 +59,7 @@ class Admin extends React.Component {
       document.getElementById("newAchievementName").value = "";
       document.getElementById("newAchievementDistance").value = "";
       document.getElementById("newAchievementDescription").value = "";
+
     })
   }
 
@@ -84,7 +84,6 @@ class Admin extends React.Component {
   }
 
   deleteAchievement(achievementId) {
-    console.log(achievementId);
     axios.get(`${config.api}/deleteAchievement?challengeId=${this.state.challengeId}&achievementId=${achievementId}`).then(res => {
       //console.log(res);
       this.getChallengeData();
@@ -103,8 +102,10 @@ class Admin extends React.Component {
               Challenge Name:
             </label>
             <input type="text" id="name" defaultValue={this.state.challengeData.challengeName} />
-            <label>Target Miles:</label>
+            <label>Target Distance:</label>
             <input type="number" id="miles" defaultValue={this.state.challengeData.targetMiles}></input>
+            <label>Target Metric:</label>
+            <input type="text" id="units" defaultValue={this.state.challengeData.targetUnits}></input>
             <label>Description:</label>
             <textarea id="description" defaultValue={this.state.challengeData.description}></textarea>
           </div>

@@ -63,7 +63,6 @@ app.get("/signup", function (req, res) {
     res.setHeader("Content-Type", "text/plain");
 
     if (req && req.query && req.query.email) {
-        console.log("signing up " + req.query.name + ", " + req.query.email + ", " + req.query.password);
         var emailAddress = req.query.email;
         var name = req.query.name;
         var password = req.query.password;
@@ -87,7 +86,6 @@ app.get("/signup", function (req, res) {
 app.get("/enrollUserInChallenge", function (req, res) {
     if (req && req.query.challenge && req.query.user) {
         challengeDataFunctions.enrollUserInChallenge(req.query.challenge, req.query.user).then(result => {
-            console.log(result);
             if (result) {
                 res.send(true);
             } else {
@@ -140,7 +138,6 @@ app.post('/uploadImage', function (req, res) {
         limits: { fileSize: 1000000 },
     }).single("file");
 
-    console.log("uploading");
     upload(req, res, err => {
         if (!err) return res.send(fileName).end();
     })
@@ -172,7 +169,6 @@ app.get("/createChallenge", function (req, res) {
 
 app.get("/getAllChallenges", function (req, res) {
     challengeDataFunctions.getAllChallenges().then(response => {
-        console.log(response);
         res.send(response);
     })
 })
@@ -186,7 +182,6 @@ app.get("/getUserChallenges", function (req, res) {
 
 app.get("/updateChallengeData", function (req, res) {
     if (req.query && req.query.challengeId) {
-        console.log(req.query);
         //note: this is a little different than other things, in that we're sending the entire req.query
         challengeDataFunctions.updateChallengeData(req.query.challengeId, req.query).then(response => {
             if (response) {
@@ -197,9 +192,7 @@ app.get("/updateChallengeData", function (req, res) {
 })
 
 app.get("/getUserChallengeData", function (req, res) {
-    console.log("1");
 
-    console.log(req.query);
     if (req.query && req.query.user && req.query.challenge) {
         userAccountFunctions.getUserChallengeData(req.query.user, req.query.challenge).then(response => {
             res.send(response);
@@ -227,7 +220,6 @@ app.get("/getChallengeData", function (req, res) {
 
 
 app.get("/login", function (req, res) {
-    console.log("login");
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -253,7 +245,6 @@ app.get("/login", function (req, res) {
 
     userAccountFunctions.checkLogin(email, password).then(checkLoginResult => {
         if (checkLoginResult && checkLoginResult[0] && checkLoginResult[1]) {
-            console.log(checkLoginResult);
             if (checkLoginResult[0] == true) {
                 const payload = { username: checkLoginResult[1], id: checkLoginResult[2] };
                 const token = jwt.sign(payload, config.tokenSecret, {

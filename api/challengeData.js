@@ -33,8 +33,6 @@ async function deleteAchievement(challengeId, achievementId){
     
     getChallengeData(challengeId).then(challengeData => {
         
-        console.log("delete " + achievementId);
-
         if(challengeData.achievements){
             var count = 0;
             var achievements = challengeData.achievements
@@ -87,8 +85,6 @@ async function updateChallengeData(challengeId, updatedData){
 }
 
 async function createNewChallenge(challengeName, targetMiles, ownerId, public) {
-
-    console.log("create called");
 
     getNewId().then(challengeId => {
         var data = {

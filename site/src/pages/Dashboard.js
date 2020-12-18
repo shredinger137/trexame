@@ -90,7 +90,8 @@ class Dashboard extends React.Component {
             this.setState({
                 challengeName: res.data.challengeName,
                 marathonDistance: res.data.targetMiles,
-                challengeAchievements: res.data.achievements
+                challengeAchievements: res.data.achievements,
+                challengeUnits: res.data.targetUnits
             });
             console.log(res.data.achievements);
           
@@ -159,7 +160,7 @@ class Dashboard extends React.Component {
                     </div>
                     <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
                     <br />
-                    <span>Your Marathon: {this.state.challengeName} ({this.state.marathonDistance} miles)</span>
+                    <span>Your Marathon: {this.state.challengeName} ({this.state.marathonDistance} {this.state.challengeUnits})</span>
                     <br />
                     <br />
                     <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>
@@ -168,7 +169,7 @@ class Dashboard extends React.Component {
                             <tbody>
                                 <tr>
                                     <td style={{ textAlign: "left" }}>
-                                        <label htmlFor="addMiles"><span>Distance (miles):{" "}</span></label>
+                                        <label htmlFor="addMiles"><span>Distance ({this.state.challengeUnits}):{" "}</span></label>
                                     </td>
                                     <td >
                                         <input id="addMiles"></input>
@@ -190,7 +191,7 @@ class Dashboard extends React.Component {
                     <br />
                     <br />
                     <div>
-                        <span>Total: {this.state.progressTotal} / {this.state.marathonDistance}{" "} Miles</span>
+                        <span>Total: {this.state.progressTotal} / {this.state.marathonDistance}{" "} {this.state.challengeUnits}</span>
                         <br /><br />
                     </div>
                     <table>
@@ -198,7 +199,7 @@ class Dashboard extends React.Component {
                             {this.state.progressSorted.map(
                                 date => (
                                     <tr key={date[0]}>
-                                        <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} Miles</span></td>
+                                        <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} {this.state.challengeUnits}</span></td>
                                     </tr>
                                 )
 
