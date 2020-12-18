@@ -158,7 +158,7 @@ class Dashboard extends React.Component {
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
-                    <span id="progressText" style={{ width: "50vw" }}>{this.state.progressTotal} / {this.state.marathonDistance}</span>
+                    <span id="progressText" style={{ width: "50vw" }}>Total: {this.state.progressTotal} / {this.state.marathonDistance}</span>
                     <br />
                     <span>Your Marathon: {this.state.challengeName} ({this.state.marathonDistance} {this.state.challengeUnits})</span>
                     <br />
@@ -190,10 +190,6 @@ class Dashboard extends React.Component {
                       </form>
                     <br />
                     <br />
-                    <div>
-                        <span>Total: {this.state.progressTotal} / {this.state.marathonDistance}{" "} {this.state.challengeUnits}</span>
-                        <br /><br />
-                    </div>
                     <table>
                         <tbody>
                             {this.state.progressSorted.map(

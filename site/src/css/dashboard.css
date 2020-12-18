@@ -13,12 +13,16 @@
     margin: 0 auto;
     width: 75vw;
     background-color: grey;
+    border-radius: 25px;
+    margin-bottom: 15px;
 }
   
 #progressBar {
+    height: 15px;
     width: 0%;
-    height: 10px;
     background-color: green;
+    border-radius: 25px 0 0 25px;
+
 }
 
 input {
