@@ -85,17 +85,18 @@ tr {
 
 }
 
-
-
 .badgeGrid div {
     border-style: solid;
     padding: 15px;
 }
 
-.small {
-
-    font-size: 1rem;
+.achievementsItemWrapper {
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
 }
+
 
 .badgeDescription {
     font-style: italic;

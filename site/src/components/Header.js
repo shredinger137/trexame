@@ -5,27 +5,27 @@ var Header = (props) => {
     return (
         <>
             <div className="menuWrapper">
-                <div className="menuSubWrapper" id="mobileMenuWrapper">
+                <div className="menuSubWrapper roboto" id="mobileMenuWrapper">
                     {props.isLoggedIn ?
                         <span className="user lightText">{props.username}</span>
                         :
-                        <a href="/login" className="user lightText">Login</a>
+                        <a href="/login" className="user roboto">Login</a>
                     }
 
                     <ul>
                         {props.isLoggedIn ?
                             <>
-                                <li><a href="/challenges" className="lightText">Challenges</a></li>
-                                <li><a href="/account" className="lightText">Account</a></li>
+                                <li><a href="/challenges">Challenges</a></li>
+                                <li><a href="/account">Account</a></li>
                             </>
                             :
                             null
                         }
 
                         {props.isLoggedIn ?
-                            <li className="signUpButton"><span className="lightText" onClick={props.logOut} style={{ cursor: "pointer" }}>Log Out</span></li>
+                            <li className="signUpButton roboto"><span onClick={props.logOut} style={{ cursor: "pointer" }} className="roboto">Log Out</span></li>
                             :
-                            <li className="signUpButton"><a href="/signup" className="lightText">Sign Up</a></li>
+                            <li className="signUpButton roboto"><a href="/signup">Sign Up</a></li>
                         }
                     </ul>
                 </div>
@@ -35,7 +35,6 @@ var Header = (props) => {
                     <span></span>
                 </div>
             </div>
-            <div id="offsetSpace" style={{ height: "25px" }}></div>
         </>
     );
 }

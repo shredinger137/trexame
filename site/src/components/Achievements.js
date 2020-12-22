@@ -1,5 +1,4 @@
 import React from 'react';
-import { badgeData } from "./achievementsData.js";
 import { config } from "../config.js";
 
 class Achievements extends React.Component {

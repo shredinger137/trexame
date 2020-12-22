@@ -54,23 +54,24 @@ module.exports = {
   getUserData: getUserData,
   getUserChallengeData: getUserChallengeData,
   updateUserProgress: updateUserProgress,
-  verifyToken:verifyToken
+  verifyToken: verifyToken,
+  generateResetPasswordLink: generateResetPasswordLink
 }
 
 
-async function verifyToken(token){
+async function verifyToken(token) {
   console.log(token);
-    if (!token){
-        return false;
-    }
-    jwt.verify(token, config.tokenSecret, function(err, decoded){
-        if(err)
-        return false;
+  if (!token) {
+    return false;
+  }
+  jwt.verify(token, config.tokenSecret, function (err, decoded) {
+    if (err)
+      return false;
 
-        //not totally sure if 'true' means it's actually verified or not
-        console.log(true);
-        return true;
-    })
+    //not totally sure if 'true' means it's actually verified or not
+    console.log(true);
+    return true;
+  })
 }
 
 async function checkLogin(email, password) {
@@ -155,7 +156,7 @@ async function getUserChallengeData(userID, challengeID) {
     if (account == null) {
       return false;
     }
-    if (account && account["progress"]&& account["progress"][challengeID]) {
+    if (account && account["progress"] && account["progress"][challengeID]) {
       return account["progress"][challengeID];
     } else {
       return false;
@@ -219,7 +220,7 @@ async function getUserChallenges(id) {
     try {
       var userOwnedChallenges = await dbConnection.collection("challenges").find({ ownerId: id }).toArray();
       var userJoinedChallenges = await dbConnection.collection("challenges").find({ participants: { $in: [id] } }).toArray();
-      var userOtherChallenges = await dbConnection.collection("challenges").find({ ownerId: {$ne: id}, participants: { $nin: [id] }}).toArray();
+      var userOtherChallenges = await dbConnection.collection("challenges").find({ ownerId: { $ne: id }, participants: { $nin: [id] } }).toArray();
 
     } catch (err) {
       console.log(err);
@@ -227,19 +228,19 @@ async function getUserChallenges(id) {
     }
 
     finally {
-      if(userOwnedChallenges){
+      if (userOwnedChallenges) {
         allChallenges["owned"] = userOwnedChallenges;
       } else {
         allChallenges["owned"] = [];
       }
 
-      if(userJoinedChallenges){
+      if (userJoinedChallenges) {
         allChallenges["joined"] = userJoinedChallenges;
       } else {
         allChallenges["joined"] = [];
       }
 
-      if(userOtherChallenges){
+      if (userOtherChallenges) {
         allChallenges["notEnrolled"] = userOtherChallenges;
       } else {
         allChallenges["notEnrolled"] = [];
@@ -273,4 +274,65 @@ async function getUserData(userId) {
     return false;
   }
 
+}
+
+
+
+async function changePassword(userId, newPassword){
+
+  var passwordHashed = passwordHash.generate(password);
+
+  try {
+    dbConnection.collection("users").updateOne({trexaId: userId}, {$set: {password: passwordHashed}})
+  } 
+
+  catch (err) {
+    console.log(err);
+    return false;
+  }
+  
+  finally {
+    return true;
+  }
+
+}
+
+
+//TODO: Add a cron job to delete expired links.
+//Also, this should see how many already exist. Too many = spam.
+
+//This seems obvious, but note that we don't actually use this link anywhere. Probably a good next step.
+
+async function generateResetPasswordLink(emailAddress) {
+  try {
+    var userData = await dbConnection.collection("users").findOne({ email: emailAddress })
+  }
+  catch (err) {
+    console.log(err)
+    return false;
+  }
+  finally {
+    if (userData) {
+      var linkString = Math.random().toString(36).slice(2);
+      var date = Date.now();
+
+      var newLink = {
+        linkString: linkString,
+        dateCreated: date,
+        userId: userData.trexaId
+      }
+
+  
+      try {
+        dbConnection.collection("resetLinks").insertOne(newLink);
+      }
+
+      catch (err) {
+        console.log(err);
+      }
+    } else {
+      return false;
+    }
+  }
+  return true;
 }

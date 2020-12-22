@@ -9,7 +9,7 @@ var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
 const multer = require('multer');
 const path = require("path");
-const { createNewChallenge } = require("./challengeData");
+
 
 const secret = "temp"; //TODO: this changes to a config thing later
 var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
@@ -82,6 +82,18 @@ app.get("/signup", function (req, res) {
         res.send("oop");
     }
 });
+
+app.get("/resetPassword", function (req, res) {
+    if (req && req.query.email) {
+        userAccountFunctions.generateResetPasswordLink(req.query.email).then(result => {
+            if (result) {
+                res.send(true);
+            } else {
+                res.send(false);
+            }
+        })
+    }
+})
 
 app.get("/enrollUserInChallenge", function (req, res) {
     if (req && req.query.challenge && req.query.user) {

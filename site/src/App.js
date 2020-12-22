@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import './css/commonStyles.css' //TODO: This is replacing common.css; fill it out with that content
+import './css/common.css'
 
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import Stats from './pages/Stats';
@@ -18,6 +18,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Challenges from './pages/Challenges';
 import Admin from './pages/Admin';
+import VerifyAccount from './pages/VerifyAccount';
 
 
 var jwt = require('jsonwebtoken');
@@ -125,6 +126,11 @@ class App extends React.Component {
                       checkLogin={this.checkLogin}
                       isLoggedIn={this.state.isLoggedIn}
                       username={this.state.username} />
+                  }
+                />
+                <Route path="/verify"
+                  component={() =>
+                    <VerifyAccount />
                   }
                 />
                 <Route exact path="/" component={Home} />

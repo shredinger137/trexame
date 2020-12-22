@@ -1,14 +1,18 @@
 .menuWrapper {
     position: sticky;
-    background-color: #181A1D;
-    font-size: 1.2rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding-top: 22px;
-    padding-left: 100px;
-    padding-right: 100px;
-    padding-bottom: 10px;
+    background-color: #1F2937;
+    font-size: 1.3rem;
+    font-weight: 500;
+    padding-top: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 8px;
 
+}
+
+.menuWrapper a, .menuWrapper p, .menuWrapper span {
+    text-decoration: none;
+    color: white;
 }
 
 .signUpButton {

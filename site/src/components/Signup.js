@@ -32,25 +32,74 @@ class Signup extends React.Component {
 
   render() {
     return (
-      <div>
-        <h3>Create an Account</h3><br />
-        <form onSubmit={this.handleSignupSubmit.bind(this)}>
-          <div className="grid-2 formWrapper loginWrapper grid-1-small">
-            <label className="lightText">Name:</label>
-            <input type="text" id="name" />
-            <label className="lightText">Email:</label>
-            <input type="email" id="email"></input>
-            <label className="lightText">Password:
-            </label>
-            <input type="password" id="password"></input>
-          </div>
-          <br />
-          <br /><br />
-          <input type="submit" value="Submit" />
-        </form>
-        <br /><br />
-        <div id="alerts"><p id="alertText"></p></div>
+      <div class="container mx-auto">
+      <div class="w-full xl:w-3/4 lg:w-11/12 flex justify-center">
+        <div class="w-full lg:w-1/2 bg-white p-5 rounded-lg lg:rounded-l-none">
+          <h3 class="pt-4 text-2xl text-center">Create Account</h3>
+          <form class="px-8 pt-6 pb-8 mb-4 bg-white rounded" onSubmit={this.handleSignupSubmit.bind(this)}>
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="name">
+                Name
+              </label>
+              <input
+                class="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                id="name"
+                type="text"
+                placeholder="Namey McNameface"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="email">
+                Email Address
+              </label>
+              <input
+                class="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                id="email"
+                type="email"
+                placeholder="yourname@email.com"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-bold text-gray-700" htmlFor="password">
+                Password
+              </label>
+              <input
+                class="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                id="password"
+                type="password"
+                placeholder="******************"
+              />
+            </div>
+            <div class="mb-6 text-center">
+              <button
+                class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                Sign Up
+              </button>
+            </div>
+            <hr class="mb-6 border-t" />
+            <div id="alertText"></div>
+            <div class="text-center">
+              <a
+                class="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
+                href="/login"
+              >
+                Already have an account? Log in.
+              </a>
+            </div>
+            <div class="text-center">
+              <a
+                class="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
+                href="./forgot-password.html"
+              >
+                Reset Password
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
+  </div>
     );
   }
 }
