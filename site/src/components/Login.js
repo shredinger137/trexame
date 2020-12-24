@@ -44,7 +44,7 @@ class Login extends React.Component {
 
 <div style={{margin: "0, auto", paddingTop: "20px"}}>
       <div style={{display: "flex", justifyContent: "center"}}>
-        <div className="width-50 width-100-small" style={{padding: "4px"}}>
+        <div className="width-25 w-50-md width-100-small" style={{padding: "4px"}}>
           <h3 className="title center">Log In</h3>
           <form className="signup-form" onSubmit={this.submitLogin.bind(this)}>
             <div class="mb-4">
@@ -59,7 +59,7 @@ class Login extends React.Component {
               />
             </div>
             <div class="mb-4">
-              <label className="form-label" htmlFor="password">
+              <label className="form-label text-center" htmlFor="password">
                 Password
               </label>
               <input

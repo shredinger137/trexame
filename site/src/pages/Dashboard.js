@@ -30,7 +30,7 @@ class Dashboard extends React.Component {
     componentDidMount() {
         this.initDate();
         this.getMarathonData();
-        this.getUserData();
+      //  this.getUserData();
     }
 
     componentDidUpdate(prevprops, prevstate) {
@@ -55,9 +55,6 @@ class Dashboard extends React.Component {
 
     }
 
-    //TODO: Challenge isn't a state item.
-    //Date should be in unix time
-
     handleAddMiles(event) {
         event.preventDefault();
         var newMiles = document.getElementById("addMiles").value;
@@ -67,7 +64,7 @@ class Dashboard extends React.Component {
         this.initDate();
         console.log(unixTime);
         axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then(
-            //put something here to load the latest data
+            this.getUserData()
         )
     }
 
@@ -93,7 +90,9 @@ class Dashboard extends React.Component {
                 challengeAchievements: res.data.achievements,
                 challengeUnits: res.data.targetUnits
             });
-            console.log(res.data.achievements);
+
+            this.getUserData()
+            
           
         })
     }
@@ -131,7 +130,7 @@ class Dashboard extends React.Component {
             datesArray.push([dateString, this.state.progressEntries[date]]);
             total = total + this.state.progressEntries[date];
         }
-        this.setState({progressTotal: total, progressTotalPercent: ((total / this.state.marathonDistance)) * 100});
+        this.setState({progressTotal: total, progressTotalPercent: Math.floor(((total / this.state.marathonDistance)) * 100)});
         return datesArray;
     }
 
@@ -152,17 +151,16 @@ class Dashboard extends React.Component {
 
         return (
             <div className="App">
-                <h2>Dashboard</h2>
+                <h2>{this.state.challengeName}</h2>
                 <div>
+                    <div id="progress-header" style={{textAlign: "left", width: "75vw", margin: "0 auto", marginBottom: "10px"}}>
+                        <span style={{fontWeight: 700}}>Overall<br/></span>
+                        <span>{this.state.progressTotal} of {this.state.marathonDistance}  {this.state.challengeUnits} ({this.state.progressTotalPercent}%)</span>
+                    </div>
                     <div id="progress">
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
-                    <span id="progressText" style={{ width: "50vw" }}>Total: {this.state.progressTotal} / {this.state.marathonDistance}</span>
-                    <br />
-                    <span>Your Marathon: {this.state.challengeName} ({this.state.marathonDistance} {this.state.challengeUnits})</span>
-                    <br />
-                    <br />
                     <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>
                         <br />
                         <table>
@@ -190,6 +188,8 @@ class Dashboard extends React.Component {
                       </form>
                     <br />
                     <br />
+                    <details>
+                    <summary>View Entries</summary>
                     <table>
                         <tbody>
                             {this.state.progressSorted.map(
@@ -202,9 +202,10 @@ class Dashboard extends React.Component {
                             )}
                         </tbody>
                     </table>
+                    </details>
                     <div id="notFound" style={{ display: "none" }}><p>The requested ID was not found. Please check your email for the correct link, or write to <a href="mailto:admin@rrderby.org">admin@rrderby.org</a> for help.</p></div>
                     <br />
-                    <h3>Achievements: {this.state.marathonName}</h3>
+                    <h3>Achievements</h3>
                     <Achievements 
                         miles={this.state.progressTotal} 
                         marathon={this.state.userData.marathon}

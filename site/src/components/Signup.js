@@ -36,7 +36,7 @@ class Signup extends React.Component {
     return (
       <div style={{margin: "0, auto", paddingTop: "20px"}}>
       <div style={{display: "flex", justifyContent: "center"}}>
-        <div className="width-50 width-100-small" style={{padding: "4px"}}>
+        <div className="width-25 w-50-md width-100-small" style={{padding: "4px"}}>
           <h3 className="title center">Create Account</h3>
           <form className="signup-form" onSubmit={this.handleSignupSubmit.bind(this)}>
             <div style={{marginBottom: ".25rem"}}>

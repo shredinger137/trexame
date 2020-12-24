@@ -60,16 +60,12 @@ module.exports = {
 
 
 async function verifyToken(token) {
-  console.log(token);
   if (!token) {
     return false;
   }
   jwt.verify(token, config.tokenSecret, function (err, decoded) {
     if (err)
       return false;
-
-    //not totally sure if 'true' means it's actually verified or not
-    console.log(true);
     return true;
   })
 }
@@ -100,8 +96,6 @@ async function updateUserProgress(id, distance, date, challenge) {
   if (id && distance && date && challenge) {
     distance = Number(distance);
     getUserData(id).then(userData => {
-      console.log("get");
-      console.log(userData);
       if (userData.progress) {
         //user's 'progress' entry exists
         var userProgress = userData.progress;
@@ -124,7 +118,6 @@ async function updateUserProgress(id, distance, date, challenge) {
         }
 
       } else {
-        console.log("else");
         var userProgress = {};
         userProgress[challenge] = {};
         userProgress[challenge][date] = distance;
@@ -245,9 +238,6 @@ async function getUserChallenges(id) {
       } else {
         allChallenges["notEnrolled"] = [];
       }
-
-      console.log(userOtherChallenges);
-
       return allChallenges;
 
     }

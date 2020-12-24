@@ -7,3 +7,7 @@
     text-align: right;
     padding-right: 25px;
 }
+
+.signup-form label {
+    text-align: left;
+}

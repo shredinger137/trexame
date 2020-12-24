@@ -10,6 +10,10 @@ p, span, h1, h2, h3, h4, label {
     font-family: 'Open Sans', sans-serif;
 }
 
+.text-center {
+    text-align: center;
+}
+
 .roboto {
     font-family: 'Roboto', sans-serif;
 }
@@ -28,6 +32,10 @@ p, span, h1, h2, h3, h4, label {
     width: 50%;
 }
 
+.width-25 {
+    width: 25%;
+}
+
 .width-100, .w-100 {
     width: 100%;
 }
@@ -36,11 +44,18 @@ p, span, h1, h2, h3, h4, label {
     width: 75%;
 }
 
+@media only screen and (max-width: 1350px){
+    .w-50-md {
+        width: 50%;
+    }
+}
+
 .form-label {
     color: rgba(55, 65, 81);
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
     font-size: 0.9rem;
+    float: left;
 
 }
 
