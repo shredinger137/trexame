@@ -63,10 +63,17 @@ class Dashboard extends React.Component {
         var newDate = document.getElementById("date").value;
         var unixTime = ((new Date(newDate)).getTime());
         this.initDate();
-        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then( res => {
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then(res => {
             this.getUserData()
         }
-           
+
+        )
+    }
+
+    handleDeleteDate(value) {
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=0&date=${value}&challenge=${this.state.challengeId}`).then(res => {
+            this.getUserData()
+        }
         )
     }
 
@@ -124,7 +131,7 @@ class Dashboard extends React.Component {
         for (var date in this.state.progressEntries) {
             var timestamp = new Date(Math.floor(date))
             var dateString = (timestamp.getMonth() + 1) + "-" + (timestamp.getUTCDate()) + "-" + (timestamp.getFullYear());
-            datesArray.push([dateString, this.state.progressEntries[date]]);
+            datesArray.push([dateString, this.state.progressEntries[date], date]);
             total = total + this.state.progressEntries[date];
         }
         this.setState({ progressTotal: total, progressTotalPercent: Math.floor(((total / this.state.marathonDistance)) * 100) });
@@ -158,10 +165,10 @@ class Dashboard extends React.Component {
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
-                    <div className="width-25 width-75-sm" style={{ margin: "0 auto", marginTop: "30px"}}>
-                        <h4 style={{marginBlockStart: 0, marginBlockEnd: 0, marginBottom: "5px"}}>New Entry</h4>
+                    <div className="width-25 width-75-sm" style={{ margin: "0 auto", marginTop: "30px" }}>
+                        <h4 style={{ marginBlockStart: 0, marginBlockEnd: 0, marginBottom: "5px" }}>New Entry</h4>
                         <form id="updateMilesForm" className="grid-2" onSubmit={this.handleAddMiles.bind(this)}>
-                            <label className="form-label" htmlFor="addMiles"  style={{textAlign: "right", marginRight: "15px"}}>
+                            <label className="form-label" htmlFor="addMiles" style={{ textAlign: "right", marginRight: "15px" }}>
                                 Distance ({this.state.challengeUnits})
                             </label>
                             <input
@@ -169,7 +176,7 @@ class Dashboard extends React.Component {
                                 id="addMiles"
                                 type="number"
                             />
-                            <label className="form-label" htmlFor="date" style={{textAlign: "right", marginRight: "15px"}}>
+                            <label className="form-label" htmlFor="date" style={{ textAlign: "right", marginRight: "15px" }}>
                                 Date
                             </label>
                             <input
@@ -189,7 +196,7 @@ class Dashboard extends React.Component {
                                 {this.state.progressSorted.map(
                                     date => (
                                         <tr key={date[0]}>
-                                            <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} {this.state.challengeUnits}</span></td>
+                                            <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} {this.state.challengeUnits} </span><span onClick={() => { this.handleDeleteDate(date[2]) }}>[Delete]</span></td>
                                         </tr>
                                     )
 
