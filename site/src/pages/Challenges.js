@@ -30,8 +30,6 @@ class Challenges extends React.Component {
 
 
     getUserChallenges() {
-        //TODO: Get and list both owned and participating challenges.
-        //API does not respond with joinedChallenges yet.
 
         axios.get(`${config.api}/getUserChallenges?id=${this.props.userId}`).then(res => {
             this.setState({
@@ -39,7 +37,6 @@ class Challenges extends React.Component {
                 joinedChallenges: res.data.joined,
                 notEnrolled: res.data.notEnrolled
             })
-            console.log(res.data);
         })
     }
 
@@ -49,7 +46,6 @@ class Challenges extends React.Component {
 
     enrollInChallenge(challengeId) {
         axios.get(`${config.api}/enrollUserInChallenge?challenge=${challengeId}&user=${this.props.userId}`).then(res => {
-            console.log(res);
             this.getUserChallenges();
         })
     }

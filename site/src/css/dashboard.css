@@ -1,14 +1,3 @@
-
-.introText {
-    text-align: left;
-    margin: 0 auto;
-    width: 75vw;
-}
-
-.strongText {
-    font-size: 1.9rem;
-}
-
 #progress {
     margin: 0 auto;
     width: 75vw;
@@ -20,43 +9,11 @@
 #progressBar {
     height: 15px;
     width: 0%;
-    background-color: #009cb7;
+    background-color: #5CB859;
     border-radius: 25px 0 0 25px;
 
 }
 
-input {
-    background-color: #c9c9c9;
-    margin-right: 10px;
-    
-}
-
-button {
-    background-color: black;
-    display: inline-block;
-    border: 0.1em solid #FFFFFF;
-    margin:0 0.3em 0.3em 0;
-    border-radius:0.12em;
-    box-sizing: border-box;
-    text-decoration: none;
-    color: #FFFFFF;
-    text-align: center;
-    transition: all 0.2s;
-}
-
-
-
-.disabled {
-    pointer-events: none;
-    background-color: #2E2E2E;
-}
-
-
-
-.button1:hover {
-    background-color: #2E2E2E;
-   
-}
 
 table {
     margin: 0 auto;
@@ -78,6 +35,10 @@ tr {
 
 }
 
+.badgeGrid img {
+    max-width: 100px;
+}
+
 .leaderboard, .leaderboard tr td {
     border: 1px solid black;
     border-collapse: collapse;
@@ -89,14 +50,6 @@ tr {
     border-style: solid;
     padding: 15px;
 }
-
-.achievementsItemWrapper {
-    margin: 0 auto;
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-}
-
 
 .badgeDescription {
     font-style: italic;
@@ -111,7 +64,7 @@ tr {
 @media screen and (max-width: 800px) {
 
     .badgeGrid {
-        width: 95vw;
+        width: 90vw;
         grid-template-columns: 1fr 1fr;
     
     }

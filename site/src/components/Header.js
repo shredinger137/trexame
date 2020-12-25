@@ -2,17 +2,46 @@ import React from 'react';
 import '../css/menu.css'
 
 var Header = (props) => {
+
+    function menuToggle() {
+        var button = document.getElementById("menuButton");
+        var menu = document.getElementById("primary-menu");
+        var transparentListener = document.getElementById("fullPageListener");
+        if (button) {
+            button.classList.toggle("change");
+        } else { console.log("Didn't find"); }
+        if (menu && menu.style) {
+            menu.classList.toggle("menuExpanded");
+            menu.classList.toggle("menu");
+            //we use 'menu' as shorthand for a hidden menu in the CSS as a Wordpress workaround
+            transparentListener.classList.toggle("show");
+        }
+    }
+
+    /*
+                       <div class="menubutton" id="menuButton" onClick={menuToggle}>
+                        <div class="bar1"></div>
+                        <div class="bar2"></div>
+                        <div class="bar3"></div>
+                    </div>
+
+            */
+
     return (
         <>
             <div className="menuWrapper">
-                <div className="menuSubWrapper roboto" id="mobileMenuWrapper">
+
+                <div className="menuSubWrapper roboto">
+
+ 
+
                     {props.isLoggedIn ?
                         <span className="user lightText">{props.username}</span>
                         :
                         <a href="/login" className="user roboto">Login</a>
                     }
 
-                    <ul>
+                    <ul id="menu-list">
                         {props.isLoggedIn ?
                             <>
                                 <li><a href="/challenges">Challenges</a></li>

@@ -108,6 +108,19 @@ p, span, h1, h2, h3, h4, label {
         width: 100%;
     }
 
+    .width-80-small {
+        width: 80%;
+    }
+
+    .width-50-sm {
+        width: 50%;
+    }
+
+    .width-75-sm {
+        width: 75%;
+    }
+
+
 
 
 }

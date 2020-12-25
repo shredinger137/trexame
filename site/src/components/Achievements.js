@@ -63,7 +63,7 @@ class Achievements extends React.Component {
                 {this.state.badges.map(badge =>
                     <div key={badge.name}>
                         <span className="badgeName">{badge.name}</span><br />
-                        <img src={`${config.uploadedImagesRoot}/${this.props.challengeId}/${badge.image}`} width="150px" alt={`${badge.name}: ${badge.desc}`}></img>
+                        <img src={`${config.uploadedImagesRoot}/${this.props.challengeId}/${badge.image}`} alt={`${badge.name}: ${badge.desc}`}></img>
                         <br />
                         <span className="badgeDescription">{badge.description}</span>
                         <br />

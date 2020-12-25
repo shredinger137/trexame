@@ -35,7 +35,7 @@
 
 .menuWrapper li {
    display: inline-block;
-    padding-left: 15px;
+   padding-left: 15px;
 }
 
 .user {
@@ -44,11 +44,41 @@
     padding-left: 15px;
 }
 
+
+
+
+
 @media screen and (max-width: 992px) {
 
     .menuWrapper {
         padding-right: 0;
         padding-left: 0;
+        font-size: 1.2rem;
+    }
+
+    .menuWrapper ul {
+        padding-right: 0;
+    }
+
+    #menu-list {
+        padding: 0;
     }
 
   }
+
+  @media screen and (max-width: 900px){
+    
+    .signUpButton {
+        float: none;
+        padding-right: 0;
+    }
+
+    .user {
+        display: none;
+    }
+
+
+
+  }
+
+

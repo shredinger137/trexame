@@ -51,7 +51,6 @@ class Admin extends React.Component {
   //TODO: Handle response on both of these.
 
   submitNewAchievement(e) {
-    console.log("new");
     e.preventDefault();
     var newAchivementData = `name=${document.getElementById("newAchievementName").value}&distance=${document.getElementById("newAchievementDistance").value}&description=${document.getElementById("newAchievementDescription").value}&image=${this.state.newSubmissionImage}`;
     axios.get(`${config.api}/submitNewAchievement?challengeId=${this.state.challengeId}&${encodeURI(newAchivementData)}`).then(res => {
@@ -85,7 +84,6 @@ class Admin extends React.Component {
 
   deleteAchievement(achievementId) {
     axios.get(`${config.api}/deleteAchievement?challengeId=${this.state.challengeId}&achievementId=${achievementId}`).then(res => {
-      //console.log(res);
       this.getChallengeData();
     })
 

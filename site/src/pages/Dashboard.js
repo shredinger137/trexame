@@ -4,6 +4,7 @@ import '../components/Signup';
 import { config } from "../config.js";
 import Achievements from '../components/Achievements';
 
+import "../css/common.css"
 import "../css/dashboard.css"
 
 
@@ -30,14 +31,14 @@ class Dashboard extends React.Component {
     componentDidMount() {
         this.initDate();
         this.getMarathonData();
-      //  this.getUserData();
+        //  this.getUserData();
     }
 
     componentDidUpdate(prevprops, prevstate) {
-        if(this.props.userId != prevprops.userId){
+        if (this.props.userId != prevprops.userId) {
             this.getUserData();
         }
-        
+
     }
 
     initDate() {
@@ -62,26 +63,25 @@ class Dashboard extends React.Component {
         var newDate = document.getElementById("date").value;
         var unixTime = ((new Date(newDate)).getTime());
         this.initDate();
-        console.log(unixTime);
-        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then(
+        axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then( res => {
             this.getUserData()
+        }
+           
         )
     }
 
 
     getUserData() {
-        console.log("userdata");
         axios.get(`${config.api}/getUserChallengeData?user=${this.props.userId}&challenge=${this.state.challengeId}`).then(res => {
-            console.log(res);
-            this.setState({progressEntries: res.data });
-            this.setState({progressSorted: this.getDates()})
+            this.setState({ progressEntries: res.data });
+            this.setState({ progressSorted: this.getDates() });
         })
     }
 
     getMarathonData() {
         var challengeId = this.getMarathonId();
-        if(challengeId){
-            this.setState({challengeId: challengeId});
+        if (challengeId) {
+            this.setState({ challengeId: challengeId });
         }
         axios.get(`${config.api}/getChallengeData?challengeId=${challengeId}`).then(res => {
             this.setState({
@@ -92,8 +92,8 @@ class Dashboard extends React.Component {
             });
 
             this.getUserData()
-            
-          
+
+
         })
     }
 
@@ -104,7 +104,7 @@ class Dashboard extends React.Component {
         }
     }
 
-    
+
 
     handlePublicOption() {
         var value = document.getElementById("publicToggle").checked;
@@ -117,20 +117,17 @@ class Dashboard extends React.Component {
     }
 
     getDates() {
-        
+
         var total = 0;
         var datesArray = [];
-        console.log(this.state.progressEntries);
 
- 
         for (var date in this.state.progressEntries) {
-            console.log(date);
             var timestamp = new Date(Math.floor(date))
             var dateString = (timestamp.getMonth() + 1) + "-" + (timestamp.getUTCDate()) + "-" + (timestamp.getFullYear());
             datesArray.push([dateString, this.state.progressEntries[date]]);
             total = total + this.state.progressEntries[date];
         }
-        this.setState({progressTotal: total, progressTotalPercent: Math.floor(((total / this.state.marathonDistance)) * 100)});
+        this.setState({ progressTotal: total, progressTotalPercent: Math.floor(((total / this.state.marathonDistance)) * 100) });
         return datesArray;
     }
 
@@ -153,64 +150,61 @@ class Dashboard extends React.Component {
             <div className="App">
                 <h2>{this.state.challengeName}</h2>
                 <div>
-                    <div id="progress-header" style={{textAlign: "left", width: "75vw", margin: "0 auto", marginBottom: "10px"}}>
-                        <span style={{fontWeight: 700}}>Overall<br/></span>
+                    <div id="progress-header" style={{ textAlign: "left", width: "75vw", margin: "0 auto", marginBottom: "10px" }}>
+                        <span style={{ fontWeight: 700 }}>Overall<br /></span>
                         <span>{this.state.progressTotal} of {this.state.marathonDistance}  {this.state.challengeUnits} ({this.state.progressTotalPercent}%)</span>
                     </div>
                     <div id="progress">
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
-                    <form id="updateMilesForm" onSubmit={this.handleAddMiles.bind(this)}>
-                        <br />
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td style={{ textAlign: "left" }}>
-                                        <label htmlFor="addMiles"><span>Distance ({this.state.challengeUnits}):{" "}</span></label>
-                                    </td>
-                                    <td >
-                                        <input id="addMiles"></input>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style={{ textAlign: "left" }}>
-                                        <label htmlFor="date"><span>Date:{" "}</span></label>
-                                    </td>
-                                    <td>
-                                        <input id="date" type="date"></input>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="submit">Submit</button>
-                        <br /><br />
-                      </form>
-                    <br />
+                    <div className="width-25 width-75-sm" style={{ margin: "0 auto", marginTop: "30px"}}>
+                        <h4 style={{marginBlockStart: 0, marginBlockEnd: 0, marginBottom: "5px"}}>New Entry</h4>
+                        <form id="updateMilesForm" className="grid-2" onSubmit={this.handleAddMiles.bind(this)}>
+                            <label className="form-label" htmlFor="addMiles"  style={{textAlign: "right", marginRight: "15px"}}>
+                                Distance ({this.state.challengeUnits})
+                            </label>
+                            <input
+                                className="width-100 px-3 py-2 form-input-shadow"
+                                id="addMiles"
+                                type="number"
+                            />
+                            <label className="form-label" htmlFor="date" style={{textAlign: "right", marginRight: "15px"}}>
+                                Date
+                            </label>
+                            <input
+                                className="width-100 px-3 py-2 form-input-shadow"
+                                id="date"
+                                type="date"
+                            />
+                            <div></div>
+                            <button type="submit" className="submit-button-round-blue">Submit</button>
+                        </form>
+                    </div>
                     <br />
                     <details>
-                    <summary>View Entries</summary>
-                    <table>
-                        <tbody>
-                            {this.state.progressSorted.map(
-                                date => (
-                                    <tr key={date[0]}>
-                                        <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} {this.state.challengeUnits}</span></td>
-                                    </tr>
-                                )
+                        <summary>View Entries</summary>
+                        <table>
+                            <tbody>
+                                {this.state.progressSorted.map(
+                                    date => (
+                                        <tr key={date[0]}>
+                                            <td><span>{date[0]}:{"  "}</span></td><td><span>{"  "}{date[1]} {this.state.challengeUnits}</span></td>
+                                        </tr>
+                                    )
 
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>
                     </details>
                     <div id="notFound" style={{ display: "none" }}><p>The requested ID was not found. Please check your email for the correct link, or write to <a href="mailto:admin@rrderby.org">admin@rrderby.org</a> for help.</p></div>
                     <br />
                     <h3>Achievements</h3>
-                    <Achievements 
-                        miles={this.state.progressTotal} 
+                    <Achievements
+                        miles={this.state.progressTotal}
                         marathon={this.state.userData.marathon}
                         achievements={this.state.challengeAchievements}
-                        challengeId={this.state.challengeId} 
+                        challengeId={this.state.challengeId}
                     />
                     <br /><br />
                 </div>
