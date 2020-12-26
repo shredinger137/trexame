@@ -19,6 +19,8 @@ import Login from './components/Login';
 import Challenges from './pages/Challenges';
 import Admin from './pages/Admin';
 import VerifyAccount from './pages/VerifyAccount';
+import ResetPassword from './components/ResetPassword'
+import AccountSettings from './pages/AccountSettings'
 
 
 var jwt = require('jsonwebtoken');
@@ -87,7 +89,7 @@ class App extends React.Component {
   render() {
 
     return (
-      <div className="App">
+      <div className="App" style={{ minHeight: "100vh" }}>
         <Header
           handleSignUpClick={this.handleSignUpClick}
           handleLoginClick={this.handleLoginClick}
@@ -133,6 +135,18 @@ class App extends React.Component {
                     <VerifyAccount />
                   }
                 />
+                <Route path="/resetpassword"
+                  component={() =>
+                    <ResetPassword />
+                  }
+                />
+
+                <Route path="/account"
+                  component={() =>
+                    <AccountSettings />
+                  }
+                />
+
                 <Route exact path="/" component={Home} />
 
 

@@ -48,6 +48,7 @@ class Signup extends React.Component {
                 id="name"
                 type="text"
                 placeholder="Namey McNameface"
+                required
               />
             </div>
             <div style={{marginBottom: ".25rem"}}>
@@ -59,6 +60,7 @@ class Signup extends React.Component {
                 id="email"
                 type="email"
                 placeholder="yourname@email.com"
+                required
               />
             </div>
             <div style={{marginBottom: ".25rem"}}>
@@ -70,6 +72,7 @@ class Signup extends React.Component {
                 id="password"
                 type="password"
                 placeholder="******************"
+                required
               />
             </div>
             <div style={{marginBottom: ".25rem"}} class="center">
@@ -86,12 +89,7 @@ class Signup extends React.Component {
               <Link to="/login"><span class="link-text-secondary">Already have an account? Log in.</span></Link>
             </div>
             <div class="text-center">
-              <a
-                class="link-text-secondary text-center"
-                href="./forgot-password.html"
-              >
-                Reset Password
-              </a>
+              <Link to="/resetpassword"><span class="link-text-secondary">Reset Password</span></Link>
             </div>
           </form>
         </div>

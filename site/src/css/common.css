@@ -3,6 +3,10 @@ body {
     text-decoration: none;
 }
 
+html, body {
+    overflow: auto;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap');
 
@@ -101,6 +105,7 @@ p, span, h1, h2, h3, h4, label {
     margin-bottom: .5rem;
     border: 1px solid grey;
 }
+
 
 
 @media screen and (max-width: 800px) { 
