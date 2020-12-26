@@ -1,9 +1,9 @@
 var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Server;
 var config = require("./config.js");
 var express = require("express");
-var app = express();
 var passwordHash = require('password-hash');
 var jwt = require('jsonwebtoken');
+var emailFunctions = require('./emailFunctions.js');
 
 var dbConnection = null;
 MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true }, function (err, client) {
@@ -320,6 +320,24 @@ async function generateResetPasswordLink(emailAddress) {
       catch (err) {
         console.log(err);
       }
+
+      finally {
+        var text = 
+
+        `
+        <p>Hello! 
+        <br /><br />
+        A password reset was requested for your Trexa.me account. If you didn't requeset it, don't worry - no one else can use your reset link, and you can ignore it. Otherwise, follow this link to set a new password:
+        <br /><br />
+        <a href="https://trexa.me/newpassword?string=${linkString}" target="_new">https://trexa.me/newpassword?string=${linkString}</a>
+        <br /><br />
+        Thank you for using Trexa.me. If you have any issues - or if you didn't expect to have an account with us - email admin@rrderby.org for help.
+        `
+
+        emailFunctions.sendEmailToUser(emailAddress, "Password Reset", text);
+
+      }
+
     } else {
       return false;
     }
