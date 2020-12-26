@@ -59,9 +59,6 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
 app.get("/signup", function (req, res) {
 
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "text/plain");
-
     if (req && req.query && req.query.email) {
         var emailAddress = req.query.email;
         var name = req.query.name;
@@ -82,6 +79,14 @@ app.get("/signup", function (req, res) {
         res.send("oop");
     }
 });
+
+app.get("/checkResetLink", function (req, res) {
+    if (req && req.query.string) {
+        //user account function that doesn't exist yet - see if string is real and valid, return true or false
+    }
+})
+
+
 
 app.get("/resetPassword", function (req, res) {
     if (req && req.query.email) {

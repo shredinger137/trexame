@@ -147,6 +147,18 @@ class App extends React.Component {
                   }
                 />
 
+                <Route path="/newpassword"
+                  component={() =>
+                    <Login
+                      checkLogin={this.checkLogin}
+                      isLoggedIn={this.state.isLoggedIn}
+                      username={this.state.username}
+                      reset={true}
+
+                    />
+                  }
+                />
+
                 <Route exact path="/" component={Home} />
 
 
