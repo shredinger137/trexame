@@ -1,3 +1,5 @@
+/* eslint eqeqeq: "off", no-extend-native: "off", no-throw-literal: "off" */
+
 import React from 'react';
 import '../css/menu.css'
 import { Link } from 'react-router-dom'

@@ -1,3 +1,5 @@
+/* eslint eqeqeq: "off", no-extend-native: "off", no-throw-literal: "off" */
+
 import React from 'react';
 import axios from 'axios';
 import '../components/Signup';
@@ -24,7 +26,6 @@ class Dashboard extends React.Component {
         progressTotal: 0,
         progressTotalPercent: 0,
         marathonDistance: 0,
-        marathonName: "",
         challengeId: ""
     };
 

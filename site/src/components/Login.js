@@ -1,84 +1,73 @@
-import React from 'react';
-import '../App.css';
-import { config } from "../config.js";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useFirebaseApp } from 'reactfire';
+import 'firebase/auth';
 import axios from 'axios';
-import { Link } from "react-router-dom";
+import {config} from '../config';
+
 
 import '../css/gridLayout.css';
 import '../css/forms.css';
 
-//TODO: Reset password should go as a prop to this one. Since we need to toglle showing the main section.
+const LoginFirebase = (props) => {
+  // User State
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+    error: '',
+  });
 
-class Login extends React.Component {
-
-  state = {
-    forgotPassword: false,
-    string: ""
-  }
-
-  componeneDidMount() {
-    console.log(this.props)
-  }
-
-  changePassword(e) {
-    e.preventDefault();
-  }
-
-  getResetData() {
-
-    const params = new URLSearchParams(window.location.search);
-    if (params && params.get("string")) {
-      var string = params.get("string");
-      axios.get(`${config.api}/checkResetLink?string=${string}`).then(res => {
-        if(res && res.data && res.data == true){
-          this.setState({string: string})
-        } else {
-          this.setState({string: false})
-          //this should do some sort of error thing
-        }
-      })
-    }
-    else {
-      //error state - don't show the form
-    }
-  }
-
-  submitLogin(e) {
-    console.log('submit');
-    e.preventDefault();
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
-    axios.get(config.api + "/login?email=" + email + "&password=" + password, { withCredentials: true }).then(res => {
-      console.log(res);
-      if (res && res.data && res.data.result) {
-        this.setState({ loginResponse: res.data.result });
-        this.props.checkLogin();
-        if (res.data.result == "validLogin") {
-          window.location.href = "/challenges";
-        }
-      }
-      console.log(res.data.result);
+  const handleChange = e => {
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value,
+      error: '',
     })
+  };
+
+  const firebase = useFirebaseApp();
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    firebase.auth().signInWithEmailAndPassword(user.email, user.password).then(response => {
+      
+      //this gets us an ID token; we should do something with it....
+      firebase.auth().currentUser.getIdToken(false).then(idToken => {
+        
+        axios.get(`${config.api}/users/${response.uid}`, {headers: {'Authorization': idToken}})
+
+        //no response requested here - intention is to do a 'get info', and on the other side if the account doesn't exist but the authorization is correct we have to create it.
+        //Might be better to use this logic everywhere EXCEPT here, since we don't actually do anything with the information on this page.
+        //Alternative would be to have the user info as a global element, but that seems ineffecient given the lack of challenge data needed.
+        //So maybe tweak the API to only deliver some data?
+
+        window.location.href = "/challenges";
+      }).catch(function(error) {
+        console.log(error);
+      });
+
+      
+    })
+      .catch(error => {
+        setUser({
+          ...user,
+          error: error.message,
+        })
+      })
   }
 
-
-  stopProp = (e) => {
-    e.stopPropagation();
-  }
-
-  render() {
-    return (
-
+  return (
+    <>
       <div style={{ margin: "0, auto", paddingTop: "20px" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div className="width-25 w-50-md width-100-small" style={{ padding: "4px" }}>
 
-            {this.props.reset ?
+            {props.reset ?
               <>
 
                 <h3 className="title center">New Password</h3>
                 <form className="signup-form" onSubmit={this.changePassword.bind(this)}>
-                  <div class="mb-4">
+                  <div className="mb-4">
                     <label className="form-label text-center" htmlFor="newPassword">
                       New Password
                </label>
@@ -90,7 +79,7 @@ class Login extends React.Component {
                       required
                     />
                   </div>
-                  <div class="mb-6 text-center">
+                  <div className="mb-6 text-center">
                     <button
                       className="w-75 submit-button-round-blue"
                       type="submit"
@@ -98,9 +87,9 @@ class Login extends React.Component {
                       Change Password
                </button>
                   </div>
-                  <hr class="mb-6 border-t" />
+                  <hr className="mb-6 border-t" />
                   <div id="alertText"></div>
-                  <div class="text-center">
+                  <div className="text-center">
                     <Link to="/signup">
                       <span
                         className="link-text-secondary"
@@ -109,7 +98,7 @@ class Login extends React.Component {
                </span>
                     </Link>
                   </div>
-                  <div class="text-center">
+                  <div className="text-center">
                     <Link to="/resetpassword"><span class="link-text-secondary">Reset Password</span></Link>
                   </div>
 
@@ -119,32 +108,20 @@ class Login extends React.Component {
               <>
 
                 <h3 className="title center">Log In</h3>
-                <form className="signup-form" onSubmit={this.submitLogin.bind(this)}>
-                  <div class="mb-4">
+                <form className="signup-form" onSubmit={handleSubmit}>
+                  <div className="mb-4">
                     <label className="form-label" htmlFor="email">
                       Email Address
               </label>
-                    <input
-                      className="width-100 px-3 py-2 form-input-shadow"
-                      id="email"
-                      type="email"
-                      placeholder="yourname@email.com"
-                      required
-                    />
+              <input type="text" placeholder="yourname@trexa.me" name="email" onChange={handleChange}  className="width-100 px-3 py-2 form-input-shadow" required/>
                   </div>
-                  <div class="mb-4">
+                  <div className="mb-4">
                     <label className="form-label text-center" htmlFor="password">
                       Password
               </label>
-                    <input
-                      className="width-100 px-3 py-2 form-input-shadow"
-                      id="password"
-                      type="password"
-                      placeholder="******************"
-                      required
-                    />
+              <input type="password" placeholder="******************" name="password" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required/><br />
                   </div>
-                  <div class="mb-6 text-center">
+                  <div className="mb-6 text-center">
                     <button
                       className="w-75 submit-button-round-blue"
                       type="submit"
@@ -152,9 +129,9 @@ class Login extends React.Component {
                       Log In
               </button>
                   </div>
-                  <hr class="mb-6 border-t" />
-                  <div id="alertText"></div>
-                  <div class="text-center">
+                  <hr className="mb-6 border-t" />
+                  {user.error && <h4>{user.error}</h4>}
+                  <div className="text-center">
                     <Link to="/signup">
                       <span
                         className="link-text-secondary"
@@ -163,8 +140,8 @@ class Login extends React.Component {
               </span>
                     </Link>
                   </div>
-                  <div class="text-center">
-                    <Link to="/resetpassword"><span class="link-text-secondary">Reset Password</span></Link>
+                  <div className="text-center">
+                    <Link to="/resetpassword"><span className="link-text-secondary">Reset Password</span></Link>
                   </div>
 
                 </form>
@@ -175,8 +152,9 @@ class Login extends React.Component {
         </div>
 
       </div>
-    );
-  }
-}
 
-export default Login;
+    </>
+  )
+};
+
+export default LoginFirebase;

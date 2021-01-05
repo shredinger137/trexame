@@ -5,6 +5,27 @@ import { config } from "../config.js";
 import NewChallenge from '../components/NewChallenge';
 import '../css/modal.css';
 import '../css/common.css';
+import 'firebase/auth';
+
+
+/*
+
+      
+      //this gets us an ID token; we should do something with it....
+      firebase.auth().currentUser.getIdToken(false).then(idToken => {
+        
+        axios.get(`${config.api}/users/${response.uid}`, {headers: {'Authorization': idToken}})
+
+        //no response requested here - intention is to do a 'get info', and on the other side if the account doesn't exist but the authorization is correct we have to create it.
+        //Might be better to use this logic everywhere EXCEPT here, since we don't actually do anything with the information on this page.
+        //Alternative would be to have the user info as a global element, but that seems ineffecient given the lack of challenge data needed.
+        //So maybe tweak the API to only deliver some data?
+
+        window.location.href = "/challenges";
+      }).catch(function(error) {
+        console.log(error);
+      });
+*/
 
 
 class Challenges extends React.Component {
@@ -78,23 +99,22 @@ class Challenges extends React.Component {
                         <br /><br />
                     Joined Challenges: <br />
                         {this.state.joinedChallenges.map(challenge => (
-                            <div>
+                            <div key={challenge.challengeName + "div"}>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>
                                     {challenge.challengeName}
                                 </a><br />
                             </div>
                         ))}
                         <br /><br />
-                        Available Challenges: <br />
+                        Available Challenges:</p> <br />
                         {this.state.notEnrolled.map(challenge => (
-                            <div>
+                            <div key={challenge.challengeName + "div"}>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>
                                     {challenge.challengeName}
                                 </a><span style={{cursor: "pointer"}} onClick={() => {this.enrollInChallenge(challenge.challengeId)}}>{` `}[Enroll]</span><br />
                             </div>
                         ))}
                         <br /><br />
-                    </p>
                 </div>
 
 

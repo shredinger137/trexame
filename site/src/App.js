@@ -1,4 +1,4 @@
-//next: change the date storage to be unix date for easy sorting in the database
+/* eslint eqeqeq: "off", no-extend-native: "off", no-throw-literal: "off" */
 
 import React from 'react';
 
@@ -7,9 +7,6 @@ import './css/common.css'
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import Stats from './pages/Stats';
 import './components/Signup';
-import Cookies from 'js-cookie';
-import axios from 'axios';
-import { config } from "./config.js";
 
 import Signup from './components/Signup';
 import Dashboard from './pages/Dashboard';
@@ -18,71 +15,47 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Challenges from './pages/Challenges';
 import Admin from './pages/Admin';
-import VerifyAccount from './pages/VerifyAccount';
 import ResetPassword from './components/ResetPassword'
 import AccountSettings from './pages/AccountSettings'
+import firebase from 'firebase'
 
 
-var jwt = require('jsonwebtoken');
+import AuthProvider from './components/AuthProvider'
+
 
 class App extends React.Component {
 
-
-  constructor(props) {
-    super(props);
-    this.checkLogin = this.checkLogin.bind(this);
-  }
-
   state = {
-    showSignup: false,
     isLoggedIn: null,
     username: "",
     userId: "",
-    showLogIn: false
   };
 
   componentDidMount() {
-    this.checkLogin();
+
   }
 
   componentDidUpdate() {
 
   }
 
-
-  handleLoginClick = () => {
-    this.setState({
-      showLogIn: !this.state.showLogIn
-    });
-  }
-
-  checkLogin() {
-    var token = Cookies.get('token') ? Cookies.get('token') : false;
-    if (!token) {
-      return false;
-    }
-    axios.get(config.api + "/verifytoken" + "?token=" + token).then(res => {
-
-      if (res.data === "Valid" && jwt.decode(token) && jwt.decode(token)['username'] && jwt.decode(token)['id']) {
-        this.setState({ isLoggedIn: true, username: jwt.decode(token)['username'], userId: jwt.decode(token)['id'] });
-        return true;
-      } return false;
-
-    })
-
-  }
-
   logOut() {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
-      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      window.location.href = '/';
+    firebase.auth().signOut();
+    this.setState({
+      isLoggedIn: false,
+      username: "",
+      userId: ""
+    })
+  }
+
+  getData(arg) {
+    if (arg) {
+      this.setState({
+        isLoggedIn: true,
+        username: arg.displayName,
+        userId: arg.uid
+      })
     }
-
-
   }
 
 
@@ -90,19 +63,21 @@ class App extends React.Component {
 
     return (
       <div className="App" style={{ minHeight: "100vh" }}>
-        <Header
-          handleSignUpClick={this.handleSignUpClick}
-          handleLoginClick={this.handleLoginClick}
-          isLoggedIn={this.state.isLoggedIn}
+        <AuthProvider
+          getData={this.getData.bind(this)}
           username={this.state.username}
-          logOut={this.logOut} />
+        />
+
         <BrowserRouter>
           <div>
+            <Header
+              isLoggedIn={this.state.isLoggedIn}
+              username={this.state.username}
+              logOut={this.logOut.bind(this)} />
             <Switch>
               <>
                 <Route path="/dashboard">
                   <Dashboard
-                    checkLogin={this.checkLogin}
                     username={this.state.username}
                     userId={this.state.userId}
                   />
@@ -125,14 +100,8 @@ class App extends React.Component {
                 <Route path="/login"
                   component={() =>
                     <Login
-                      checkLogin={this.checkLogin}
                       isLoggedIn={this.state.isLoggedIn}
                       username={this.state.username} />
-                  }
-                />
-                <Route path="/verify"
-                  component={() =>
-                    <VerifyAccount />
                   }
                 />
                 <Route path="/resetpassword"
@@ -150,7 +119,6 @@ class App extends React.Component {
                 <Route path="/newpassword"
                   component={() =>
                     <Login
-                      checkLogin={this.checkLogin}
                       isLoggedIn={this.state.isLoggedIn}
                       username={this.state.username}
                       reset={true}

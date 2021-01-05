@@ -1,3 +1,5 @@
+/* eslint eqeqeq: "off", no-extend-native: "off", no-throw-literal: "off" */
+
 import React from 'react';
 import axios from 'axios';
 import { config } from "../config.js";
@@ -133,7 +135,7 @@ class Admin extends React.Component {
         </form>
         {this.state.newSubmissionImage ?
           <div className="achievementsItemWrapper">
-            <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${this.state.newSubmissionImage}`} style={{ width: "150px" }}></img>
+            <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${this.state.newSubmissionImage}`} alt="New achievment preview" style={{ width: "150px" }}></img>
           </div>
           : null}
         {this.state.challengeAchievements.map(achievement => (
@@ -150,7 +152,7 @@ class Admin extends React.Component {
               <label>Description:</label>
               <span style={{ textAlign: "left" }}>{achievement.description}</span>
               <label>Image:</label>
-              <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${achievement.image}`} style={{ width: "150px" }} />
+              <img src={`${config.uploadedImagesRoot}/${this.state.challengeId}/${achievement.image}`} alt={`Badge for ${achievement.name}`} style={{ width: "150px" }} />
               <label></label>
               <span style={{ textAlign: "left" }} onClick={() => this.deleteAchievement(achievement.ident)}>Delete</span>
             </div>

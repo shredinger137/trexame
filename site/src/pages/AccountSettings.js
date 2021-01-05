@@ -3,11 +3,6 @@ import '../css/menu.css'
 
 var AccountSettings = (props) => {
 
-    function aFunction() {
-
-    }
-
-
 
     return (
         <>

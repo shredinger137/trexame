@@ -9,6 +9,15 @@ var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
 const multer = require('multer');
 const path = require("path");
+app.use(express.json());
+
+var admin = require('firebase-admin');
+
+var serviceAccount = require("./credentials.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 
 
 const secret = "temp"; //TODO: this changes to a config thing later
@@ -28,6 +37,7 @@ app.use(function (req, res, next) {
         next();
     }
 });
+
 
 
 //Create a global holder for our database instance, then open the database and assign it here.
@@ -79,6 +89,21 @@ app.get("/signup", function (req, res) {
         res.send("oop");
     }
 });
+
+
+app.post("/users", function (req, res) {
+    if(req.body && req.body.email && req.body.name){
+        userAccountFunctions.createUserAccount(req.body.name, "123", req.body.email, req.body.uid);
+        res.send(true);
+    }
+
+    else {
+        res.send("oop");
+    }
+    
+});
+
+
 
 app.get("/checkResetLink", function (req, res) {
     if (req && req.query.string) {
