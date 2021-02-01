@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import 'firebase/auth';
 import axios from 'axios';
-import {config} from '../config';
+import { config } from '../config';
 
 
 import '../css/gridLayout.css';
@@ -30,23 +30,25 @@ const LoginFirebase = (props) => {
   const handleSubmit = e => {
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(user.email, user.password).then(response => {
-      
-      //this gets us an ID token; we should do something with it....
+
+
       firebase.auth().currentUser.getIdToken(false).then(idToken => {
-        
-        axios.get(`${config.api}/users/${response.uid}`, {headers: {'Authorization': idToken}})
 
-        //no response requested here - intention is to do a 'get info', and on the other side if the account doesn't exist but the authorization is correct we have to create it.
-        //Might be better to use this logic everywhere EXCEPT here, since we don't actually do anything with the information on this page.
-        //Alternative would be to have the user info as a global element, but that seems ineffecient given the lack of challenge data needed.
-        //So maybe tweak the API to only deliver some data?
+        axios.post(`${config.api}/login/${response.user.uid}`, {
+          name: response.user.displayName,
+          email: response.user.email,
+          userId: response.user.uid,
+          authorization: idToken
 
-        window.location.href = "/challenges";
-      }).catch(function(error) {
+        }).then(response => {
+          console.log("post")
+          //notice we're not using the response; might want to for error handling or whatever
+          window.location.href = "/challenges";
+        });
+
+      }).catch(function (error) {
         console.log(error);
       });
-
-      
     })
       .catch(error => {
         setUser({
@@ -113,13 +115,13 @@ const LoginFirebase = (props) => {
                     <label className="form-label" htmlFor="email">
                       Email Address
               </label>
-              <input type="text" placeholder="yourname@trexa.me" name="email" onChange={handleChange}  className="width-100 px-3 py-2 form-input-shadow" required/>
+                    <input type="text" placeholder="yourname@trexa.me" name="email" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required />
                   </div>
                   <div className="mb-4">
                     <label className="form-label text-center" htmlFor="password">
                       Password
               </label>
-              <input type="password" placeholder="******************" name="password" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required/><br />
+                    <input type="password" placeholder="******************" name="password" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required /><br />
                   </div>
                   <div className="mb-6 text-center">
                     <button

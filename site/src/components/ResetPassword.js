@@ -1,13 +1,40 @@
 /* eslint eqeqeq: "off", no-extend-native: "off", no-throw-literal: "off" */
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import '../css/menu.css'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
-import {config} from '../config'
+import { config } from '../config'
+import { useFirebaseApp } from 'reactfire';
+import 'firebase/auth'
+
 
 var ResetPassword = (props) => {
 
+    const firebase = useFirebaseApp();
+
+
+    const [email, setEmail] = useState("");
+    const [emailHasBeenSent, setEmailHasBeenSent] = useState(false);
+    const [message, setMessage] = useState(null);
+
+
+    const sendResetEmail = event => {
+        event.preventDefault();
+        var email = document.getElementById("userEmail").value;
+        document.getElementById("userEmail").value = "";
+        
+        firebase.auth()
+            .sendPasswordResetEmail(email)
+            .then(() => {
+                setMessage("Please check your email for a reset link")
+                setTimeout(() => { setEmailHasBeenSent(false) }, 3000);
+            })
+            .catch(() => {
+                setMessage("Error resetting password");
+            });
+
+    };
 
     function submitReset(e) {
 
@@ -38,18 +65,18 @@ var ResetPassword = (props) => {
 
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <div className="width-25 w-50-md width-100-small" style={{ padding: "4px" }}>
-                    <h3 className="title center">Reset Password - this is a todo, doesn't work yet</h3>
-                    <form id="form" className="signup-form" onSubmit={submitReset.bind(this)}>
+                    <h3 className="title center">Reset Password</h3>
+                    <form id="form" className="signup-form" onSubmit={sendResetEmail}>
                         <div class="mb-4">
                             <label className="form-label" htmlFor="email">
                                 Email Address
               </label>
                             <input
-                                className="width-100 px-3 py-2 form-input-shadow"
-                                id="email"
                                 type="email"
-                                placeholder="yourname@email.com"
-                                required
+                                name="userEmail"
+                                id="userEmail"
+                                placeholder="Input your email"
+                                className="width-100 px-3 py-2 form-input-shadow"
                             />
                         </div>
                         <div class="mb-6 text-center">
@@ -81,7 +108,7 @@ var ResetPassword = (props) => {
                     <div class="text-center">
                         <Link to="/login"><span class="link-text-secondary">Login</span></Link>
                     </div>
-                    <div id="errorText" style={{display: "none"}}>
+                    <div id="errorText" style={{ display: "none" }}>
                         <p>An error occured. If this persists, contact <a href="mailto:admin@rrderby.org">admin@rrderby.org</a>.</p>
                     </div>
 
@@ -90,6 +117,7 @@ var ResetPassword = (props) => {
 
                 </div>
             </div>
+            {message}
         </div>
     );
 }

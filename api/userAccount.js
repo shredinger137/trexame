@@ -245,7 +245,7 @@ async function getUserChallenges(id) {
   }
 }
 
-//TODO: Probably not wise to get all user data every time but whatever. This is alpha. Maybe later we can prep this data before sending it.
+
 async function getUserData(userId) {
   if (dbConnection) {
     try {
@@ -266,32 +266,6 @@ async function getUserData(userId) {
 
 }
 
-
-
-async function changePassword(userId, newPassword){
-
-  var passwordHashed = passwordHash.generate(password);
-
-  try {
-    dbConnection.collection("users").updateOne({trexaId: userId}, {$set: {password: passwordHashed}})
-  } 
-
-  catch (err) {
-    console.log(err);
-    return false;
-  }
-  
-  finally {
-    return true;
-  }
-
-}
-
-
-//TODO: Add a cron job to delete expired links.
-//Also, this should see how many already exist. Too many = spam.
-
-//This seems obvious, but note that we don't actually use this link anywhere. Probably a good next step.
 
 async function generateResetPasswordLink(emailAddress) {
   try {

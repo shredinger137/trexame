@@ -9,7 +9,6 @@ const Signup = () => {
 
   const firebase = useFirebaseApp();
 
-  // User State
   const [user, setUser] = useState({
     nickname: '',
     email: '',
@@ -17,7 +16,6 @@ const Signup = () => {
     error: '',
   });
 
-  // onChange function
   const handleChange = e => {
     setUser({
       ...user,
@@ -27,14 +25,11 @@ const Signup = () => {
   };
 
 
-  // Submit function (Create account)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Sign up code here.
     await firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(result => {
         console.log(result);
-        // Update the nickname
         result.user.updateProfile({
           displayName: user.name,
         })
@@ -45,12 +40,11 @@ const Signup = () => {
           data: {
             name: user.name,
             email: user.email,
-            userId: user.uid
+            userId: result.user.uid
           }
         });
 
       }).catch(error => {
-        // Update the error
         console.log(error);
         setUser({
           ...user,

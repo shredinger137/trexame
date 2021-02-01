@@ -16,7 +16,7 @@ var admin = require('firebase-admin');
 var serviceAccount = require("./credentials.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount)
 });
 
 
@@ -31,7 +31,7 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 
     if ('OPTIONS' === req.method) {
-        res.send(200);
+        res.sendStatus(200);
     }
     else {
         next();
@@ -57,7 +57,7 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
 
 //cron.schedule("* * * * *", () => {
-    //this will be used for syncing, stats generation
+//this will be used for syncing, stats generation
 //});
 
 
@@ -65,65 +65,58 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 //Express Routes
 //*****************
 
-//We're going to say that optional fields get a null value
 
-app.get("/signup", function (req, res) {
+app.post("/login/:id", function (req, res) {
+    if (req.params.id && req.body && req.body.email && req.body.name && req.body.authorization) {
+        console.log("got login");
+        console.log(req.body.authorization);
+        //TODO: Here we're going to note that a login happened, and see if the account exists. If it doesn't, create it.
+        //Either way we respond - existed or created - and the redirect can happen on the other end.     
+        admin
+            .auth()
+            .verifyIdToken(req.body.authorization)
+            .then((decodedToken) => {
+                const uid = decodedToken.uid;
+                console.log(uid);
+                console.log(req.params.id)
+                if(req.params.id == uid){
+                    console.log("token confirmed");
+                    userAccountFunctions.getUserData(uid).then(response => {
+                        if(response){
+                            res.send(true)
+                        } else {
+                            //123 is a placeholder until we update the create function
+                            userAccountFunctions.createUserAccount(req.body.name, '123', req.body.email, uid).then(response => {
+                                //notice that we're not using the actual responses here; maybe an oversight?
+                                res.send(true)
+                            })
+                        }
+                    })
+                } else {
+                    console.log("token mismatch")
+                }               
+            })
+            .catch((error) => {
+                // Handle error
+            });
 
-    if (req && req.query && req.query.email) {
-        var emailAddress = req.query.email;
-        var name = req.query.name;
-        var password = req.query.password;
-        userAccountFunctions.checkIfUserExists(emailAddress).then(result => {
-            if (result == true) {
-                userAccountFunctions.getNewId().then(id => {
-                    userAccountFunctions.createUserAccount(name, password, emailAddress, id);
-                    res.send(true);
-                })
-            } else {
-                res.send("emailInUse");
-            }
-        }
-        )
     }
-    else {
-        res.send("oop");
-    }
-});
+
+})
 
 
 app.post("/users", function (req, res) {
-    if(req.body && req.body.email && req.body.name){
-        userAccountFunctions.createUserAccount(req.body.name, "123", req.body.email, req.body.uid);
+    if (req.body && req.body.email && req.body.name && req.body.userId) {
+        userAccountFunctions.createUserAccount(req.body.name, "123", req.body.email, req.body.userId);
         res.send(true);
     }
 
     else {
         res.send("oop");
     }
-    
+
 });
 
-
-
-app.get("/checkResetLink", function (req, res) {
-    if (req && req.query.string) {
-        //user account function that doesn't exist yet - see if string is real and valid, return true or false
-    }
-})
-
-
-
-app.get("/resetPassword", function (req, res) {
-    if (req && req.query.email) {
-        userAccountFunctions.generateResetPasswordLink(req.query.email).then(result => {
-            if (result) {
-                res.send(true);
-            } else {
-                res.send(false);
-            }
-        })
-    }
-})
 
 app.get("/enrollUserInChallenge", function (req, res) {
     if (req && req.query.challenge && req.query.user) {
@@ -162,7 +155,7 @@ app.get("/deleteAchievement", function (req, res) {
 
 app.post('/uploadImage', function (req, res) {
 
-    
+
 
     var rand = Math.floor(Math.random() * 1000);
     var fileName;
@@ -174,7 +167,7 @@ app.post('/uploadImage', function (req, res) {
             cb(null, fileName);
         }
     });
-    
+
     const upload = multer({
         storage: storage,
         limits: { fileSize: 1000000 },
@@ -188,9 +181,9 @@ app.post('/uploadImage', function (req, res) {
 
 app.get("/createChallenge", function (req, res) {
     var token = req.headers['authorization'];
-    if(!token) return res.send("token error");
+    if (!token) return res.send("token error");
 
-    jwt.verify(token, config.tokenSecret, function(err, decoded) {
+    jwt.verify(token, config.tokenSecret, function (err, decoded) {
         if (err) return res.send("token error");
 
         if (req && req.query.name && req.query.miles && req.query.id && decoded.id == req.query.id) {
@@ -200,8 +193,8 @@ app.get("/createChallenge", function (req, res) {
             res.send("success");
         } else {
             res.send("error");
-        }   
-        
+        }
+
 
     })
 
@@ -259,65 +252,6 @@ app.get("/getChallengeData", function (req, res) {
 }
 )
 
-
-
-app.get("/login", function (req, res) {
-    var origin = req.headers.origin;
-    if (req.headers.origin && req.headers.origin != undefined) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
-
-    res.setHeader("Content-Type", "text/plain");
-    res.header('Access-Control-Allow-Credentials', true)
-    res.header(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept'
-    )
-
-    var email, password
-
-    if (req.query.email && req.query.password) {
-        email = req.query.email;
-        password = req.query.password;
-    } else {
-        res.send({ result: "invalidSubmission" });
-        return;
-    }
-
-    userAccountFunctions.checkLogin(email, password).then(checkLoginResult => {
-        if (checkLoginResult && checkLoginResult[0] && checkLoginResult[1]) {
-            if (checkLoginResult[0] == true) {
-                const payload = { username: checkLoginResult[1], id: checkLoginResult[2] };
-                const token = jwt.sign(payload, config.tokenSecret, {
-                    expiresIn: '14d'
-                })
-                res.cookie('token', token, { httpOnly: false }).send({ result: "validLogin" });
-                return;
-            } else {
-
-                if (checkLoginResult[1] == 100) {
-                    res.send({ result: "notFound" });
-                    return;
-                }
-
-                if (checkLoginResult[1] == 150) {
-                    res.send({ result: "badPassword" });
-                    return;
-                }
-            }
-
-        } else {
-            res.send({ result: "error" });
-        }
-    }
-
-    )
-
-
-
-}
-)
 
 app.get("/verifytoken", function (req, res) {
     var origin = req.headers.origin;
