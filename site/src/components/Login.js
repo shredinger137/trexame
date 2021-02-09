@@ -129,6 +129,7 @@ const LoginFirebase = (props) => {
               <>
 
                 <h3 className="title center">Log In</h3>
+                <p>New update has totally revamped accounts. It has advantages, but if you'd made one before you'll have to do it again. 'Sign in with Google' does that. Challenges still exist- ask and we can set your new account as owner.</p>
                 <form className="signup-form" onSubmit={handleSubmit}>
                   <div className="mb-4">
                     <label className="form-label" htmlFor="email">
