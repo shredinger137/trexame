@@ -1,21 +1,39 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useFirebaseApp } from 'reactfire';
-import 'firebase/auth';
+import { useFirebaseApp, useAuth } from 'reactfire';
+
+import 'firebase/auth'
 import axios from 'axios';
 import { config } from '../config';
+import googleLogo from '../images/btn_google_signin_dark_normal_web.png';
 
 
 import '../css/gridLayout.css';
 import '../css/forms.css';
 
+import firebase from 'firebase/app';
+
+const provider = new firebase.auth.GoogleAuthProvider();
+
+
 const LoginFirebase = (props) => {
-  // User State
-  const [user, setUser] = useState({
-    email: '',
-    password: '',
-    error: '',
-  });
+
+    // User State
+    const [user, setUser] = useState({
+      email: '',
+      password: '',
+      error: '',
+    });
+    
+
+  const reactAuth = useAuth();
+
+
+  const signInWithGoogle = async () => {
+    await reactAuth.signInWithPopup(provider);
+  };
+
+
 
   const handleChange = e => {
     setUser({
@@ -24,6 +42,7 @@ const LoginFirebase = (props) => {
       error: '',
     })
   };
+
 
   const firebase = useFirebaseApp();
 
@@ -124,6 +143,7 @@ const LoginFirebase = (props) => {
                     <input type="password" placeholder="******************" name="password" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required /><br />
                   </div>
                   <div className="mb-6 text-center">
+                    <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} />
                     <button
                       className="w-75 submit-button-round-blue"
                       type="submit"

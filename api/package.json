@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
+    "firebase-admin": "^9.4.2",
     "jsonwebtoken": "^8.5.1",
     "mongod": "^2.0.0",
     "mongodb": "^3.5.7",

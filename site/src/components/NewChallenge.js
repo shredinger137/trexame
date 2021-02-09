@@ -2,16 +2,18 @@ import React from 'react';
 import { config } from "../config.js";
 import axios from 'axios';
 import '../css/modal.css';
-import Cookies from 'js-cookie';
+import firebase from 'firebase/app';
+
+import 'firebase/auth'
 
 
 class NewChallenge extends React.Component {
 
-  componentDidUpdate(){
+  componentDidUpdate() {
 
   }
 
-  componentDidMount(){
+  componentDidMount() {
 
   }
 
@@ -25,13 +27,22 @@ class NewChallenge extends React.Component {
     var targetMiles = document.getElementById('miles').value;
     var openEnrollment = document.getElementById('openEnrollment').value;
 
-    axios.get(`${config.api}/createChallenge?name=${marathonName}&miles=${targetMiles}&id=${this.props.userId}&pubic=${openEnrollment}`  , { headers: {
-      'Authorization': `${Cookies.get('token')}`
-    }}).then(res => {
-      //TODO: Respond to resolution
-      console.log(res);
-    }
-    )
+
+    firebase.auth().currentUser.getIdToken(false).then(idToken => {
+
+      axios.post(`${config.api}/challenge`, {
+        name: marathonName,
+        miles: targetMiles,
+        id: this.props.userId,
+        //userId should be received through firebase, TODO
+        authorization: idToken,
+        public: openEnrollment
+
+      }).then(res => {
+        console.log(res)
+      })
+
+    })
   }
 
 

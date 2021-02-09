@@ -68,10 +68,10 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 
 app.post("/login/:id", function (req, res) {
     if (req.params.id && req.body && req.body.email && req.body.name && req.body.authorization) {
-        console.log("got login");
-        console.log(req.body.authorization);
-        //TODO: Here we're going to note that a login happened, and see if the account exists. If it doesn't, create it.
+
+        //Here we're going to note that a login happened, and see if the account exists. If it doesn't, create it.
         //Either way we respond - existed or created - and the redirect can happen on the other end.     
+
         admin
             .auth()
             .verifyIdToken(req.body.authorization)
@@ -80,14 +80,13 @@ app.post("/login/:id", function (req, res) {
                 console.log(uid);
                 console.log(req.params.id)
                 if(req.params.id == uid){
-                    console.log("token confirmed");
                     userAccountFunctions.getUserData(uid).then(response => {
                         if(response){
                             res.send(true)
                         } else {
                             //123 is a placeholder until we update the create function
                             userAccountFunctions.createUserAccount(req.body.name, '123', req.body.email, uid).then(response => {
-                                //notice that we're not using the actual responses here; maybe an oversight?
+                                //notice that we're not using the actual responses here; maybe worth doing?
                                 res.send(true)
                             })
                         }
@@ -99,9 +98,28 @@ app.post("/login/:id", function (req, res) {
             .catch((error) => {
                 // Handle error
             });
-
     }
+})
 
+app.post("/challenge", function(req, res){
+
+    admin
+    .auth()
+    .verifyIdToken(req.body.authorization)
+    .then((decodedToken) => {
+        const uid = decodedToken.uid;
+        if(req.body.id == uid){
+            console.log("hit it");
+            challengeDataFunctions.createNewChallenge(req.body.name, req.body.miles, req.body.id).then(response => {
+                res.send(response);
+            });
+        } else {
+            console.log("token mismatch")
+        }               
+    })
+    .catch((error) => {
+        // Handle error
+    });
 })
 
 
@@ -155,8 +173,6 @@ app.get("/deleteAchievement", function (req, res) {
 
 app.post('/uploadImage', function (req, res) {
 
-
-
     var rand = Math.floor(Math.random() * 1000);
     var fileName;
 
@@ -178,28 +194,6 @@ app.post('/uploadImage', function (req, res) {
     })
 }
 )
-
-app.get("/createChallenge", function (req, res) {
-    var token = req.headers['authorization'];
-    if (!token) return res.send("token error");
-
-    jwt.verify(token, config.tokenSecret, function (err, decoded) {
-        if (err) return res.send("token error");
-
-        if (req && req.query.name && req.query.miles && req.query.id && decoded.id == req.query.id) {
-            challengeDataFunctions.createNewChallenge(req.query.name, req.query.miles, req.query.id).then(response => {
-                res.send(response);
-            });
-            res.send("success");
-        } else {
-            res.send("error");
-        }
-
-
-    })
-
-
-})
 
 
 app.get("/getAllChallenges", function (req, res) {

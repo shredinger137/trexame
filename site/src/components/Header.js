@@ -1,11 +1,29 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import '../css/menu.css';
 import { AuthCheck } from 'reactfire';
 import {Link} from 'react-router-dom';
+import firebase from 'firebase'
+import { useAuth, useUser } from 'reactfire';
+
+
+/*
+    useEffect(() => {
+        scrollToBottom();
+        //uncomment to get a bunch of test entries in terminal
+        //  document.getElementById("terminalData").innerHTML = `<span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br /><span style={{ paddingLeft: ".75rem" }}>test</span><br />`
+    })
+
+    */
+
+
 
 var Header = (props) => {
 
+    const { data: user } = useUser();
    
+    function logOut() {
+        firebase.auth().signOut();
+      }
 
     return (
         <>
@@ -15,8 +33,8 @@ var Header = (props) => {
 
 
 
-                    {props.isLoggedIn ?
-                        <span className="user lightText">{props.username}</span>
+                    {user ?
+                        <span className="user lightText">{user.displayName}</span>
                         :
                         <Link to="/login" className="user roboto">Login</Link>
                     }
@@ -29,7 +47,7 @@ var Header = (props) => {
 
                         
                         {props.isLoggedIn ?
-                            <li className="signUpButton roboto"><span onClick={props.logOut} style={{ cursor: "pointer" }} className="roboto">Log Out</span></li>
+                            <li className="signUpButton roboto"><span onClick={logOut} style={{ cursor: "pointer" }} className="roboto">Log Out</span></li>
                             :
                             <li className="signUpButton roboto"><Link to="/signup">Sign Up</Link></li>
                         }
