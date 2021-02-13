@@ -5,7 +5,8 @@ import axios from 'axios';
 import '../components/Signup';
 import { config } from "../config.js";
 import Achievements from '../components/Achievements';
-
+import 'firebase/auth'
+import 'firebase/app'
 import "../css/common.css"
 import "../css/dashboard.css"
 
@@ -65,6 +66,8 @@ class Dashboard extends React.Component {
         var newDate = document.getElementById("date").value;
         var unixTime = ((new Date(newDate)).getTime());
         this.initDate();
+
+
         axios.get(`${config.api}/updateprogress?user=${this.props.userId}&distance=${newMiles}&date=${unixTime}&challenge=${this.state.challengeId}`).then(res => {
             this.getUserData()
         }
@@ -140,18 +143,6 @@ class Dashboard extends React.Component {
         return datesArray;
     }
 
-    handleUpdateMarathon(event) {
-        event.preventDefault();
-        var newMarathonShortname = document.getElementById("marathon").value;
-        axios.get(`${config.api}/updatemarathon?user=${this.state.id}&marathon=${newMarathonShortname}`).then(res => {
-            this.getID();
-        });
-    }
-
-
-    openOptionsModal() {
-
-    }
 
     render() {
 

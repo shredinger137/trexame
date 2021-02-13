@@ -93,14 +93,18 @@ async function checkLogin(email, password) {
 }
 
 async function updateUserProgress(id, distance, date, challenge) {
+
   if (id && distance && date && challenge) {
+
     distance = Number(distance);
     getUserData(id).then(userData => {
       if (userData.progress) {
+
         //user's 'progress' entry exists
         var userProgress = userData.progress;
 
         if (userProgress[challenge]) {
+
           //user has progress entered for the current challenge
           var challengeProgress = userProgress[challenge];
           challengeProgress[date] = distance;
@@ -111,6 +115,7 @@ async function updateUserProgress(id, distance, date, challenge) {
           //userProgress is now prepped to be written to the database
 
         } else {
+
           //user progress exists, but entry for this challenge does not
           userProgress[challenge] = {};
           userProgress[challenge][date] = distance;
@@ -118,6 +123,7 @@ async function updateUserProgress(id, distance, date, challenge) {
         }
 
       } else {
+
         var userProgress = {};
         userProgress[challenge] = {};
         userProgress[challenge][date] = distance;

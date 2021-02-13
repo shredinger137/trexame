@@ -36,7 +36,7 @@ function App() {
                 <Route path="/dashboard">
                   <Dashboard
                     username={user.displayName}
-                    userId={user.userId}
+                    userId={user.uid}
                   />
                 </Route>
                 <Route path="/challenge-admin">

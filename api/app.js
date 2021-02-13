@@ -75,8 +75,6 @@ app.post("/login/:id", function (req, res) {
             .verifyIdToken(req.body.authorization)
             .then((decodedToken) => {
                 const uid = decodedToken.uid;
-                console.log(uid);
-                console.log(req.params.id)
                 if (req.params.id == uid) {
                     userAccountFunctions.getUserData(uid).then(response => {
                         if (response) {
@@ -153,6 +151,7 @@ app.get("/userdata", function (req, res) {
 
 app.get("/updateprogress", function (req, res) {
 
+
     var id = req.query.user;
     var distance = req.query.distance;
     var date = req.query.date;
@@ -185,7 +184,6 @@ app.post("/challenge", function (req, res) {
         .then((decodedToken) => {
             const uid = decodedToken.uid;
             if (req.body.id == uid) {
-                console.log("hit it");
                 challengeDataFunctions.createNewChallenge(req.body.name, req.body.miles, req.body.id).then(response => {
                     res.send(response);
                 });
@@ -286,7 +284,6 @@ app.get("/updateChallengeData", function (req, res) {
 
 
 app.get("/getChallengeData", function (req, res) {
-    console.log("challenge data");
     var origin = req.headers.origin;
     if (req.headers.origin && req.headers.origin != undefined) {
         if (allowedOrigins.indexOf(origin) > -1) {
