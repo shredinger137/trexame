@@ -13,4 +13,4 @@ jobs:
 
     - name: Install site dependencies
       run: ls
-      working-directory: site
+
