@@ -41,10 +41,6 @@ class Challenges extends React.Component {
 
     }
 
-    componentDidUpdate() {
-
-    }
-
     closeModal() {
         this.setState({ showNewChallenge: false });
     }

@@ -10,6 +10,7 @@ import "../css/common.css"
 import "../css/dashboard.css"
 
 
+
 class Dashboard extends React.Component {
 
 
@@ -157,6 +158,7 @@ class Dashboard extends React.Component {
         return (
             <div className="App">
                 <h2>{this.state.challengeName}</h2>
+                <p>[Dashboard] <a href={`/stats?challenge=${this.state.challengeId}`}>[Stats]</a> [Community]</p>
                 <div>
                     <div id="progress-header" style={{ textAlign: "left", width: "75vw", margin: "0 auto", marginBottom: "10px" }}>
                         <span style={{ fontWeight: 700 }}>Overall<br /></span>

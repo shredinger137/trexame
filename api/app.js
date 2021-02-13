@@ -1,10 +1,8 @@
 var express = require("express");
-const router = express.Router();
 var app = express();
 var config = require("./config.js");
 //var cron = require("node-cron");
 var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Server;
-var jwt = require('jsonwebtoken');
 var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
 const multer = require('multer');
@@ -19,8 +17,6 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-
-const secret = "temp"; //TODO: this changes to a config thing later
 var allowedOrigins = ["https://trexa.me", "https://locahost:3000", "https://localhost", "https://rrderby.org", "http://localhost:3000", "http://127.0.0.1:3000"];
 
 
@@ -65,6 +61,8 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 //Express Routes
 //*****************
 
+/* User Stuff */
+
 
 app.post("/login/:id", function (req, res) {
     if (req.params.id && req.body && req.body.email && req.body.name && req.body.authorization) {
@@ -79,9 +77,9 @@ app.post("/login/:id", function (req, res) {
                 const uid = decodedToken.uid;
                 console.log(uid);
                 console.log(req.params.id)
-                if(req.params.id == uid){
+                if (req.params.id == uid) {
                     userAccountFunctions.getUserData(uid).then(response => {
-                        if(response){
+                        if (response) {
                             res.send(true)
                         } else {
                             //123 is a placeholder until we update the create function
@@ -93,33 +91,12 @@ app.post("/login/:id", function (req, res) {
                     })
                 } else {
                     console.log("token mismatch")
-                }               
+                }
             })
             .catch((error) => {
                 // Handle error
             });
     }
-})
-
-app.post("/challenge", function(req, res){
-
-    admin
-    .auth()
-    .verifyIdToken(req.body.authorization)
-    .then((decodedToken) => {
-        const uid = decodedToken.uid;
-        if(req.body.id == uid){
-            console.log("hit it");
-            challengeDataFunctions.createNewChallenge(req.body.name, req.body.miles, req.body.id).then(response => {
-                res.send(response);
-            });
-        } else {
-            console.log("token mismatch")
-        }               
-    })
-    .catch((error) => {
-        // Handle error
-    });
 })
 
 
@@ -136,72 +113,6 @@ app.post("/users", function (req, res) {
 });
 
 
-app.get("/enrollUserInChallenge", function (req, res) {
-    if (req && req.query.challenge && req.query.user) {
-        challengeDataFunctions.enrollUserInChallenge(req.query.challenge, req.query.user).then(result => {
-            if (result) {
-                res.send(true);
-            } else {
-                res.send(false);
-            }
-        })
-    }
-})
-
-
-app.get("/submitNewAchievement", function (req, res) {
-    if (req && req.query && req.query.challengeId) {
-        challengeDataFunctions.addNewAchievement(req.query.challengeId, req.query).then(response => {
-            res.send(response);
-        })
-    } else {
-        res.send(false);
-    }
-}
-)
-
-app.get("/deleteAchievement", function (req, res) {
-    if (req && req.query && req.query.achievementId && req.query.challengeId) {
-        challengeDataFunctions.deleteAchievement(req.query.challengeId, req.query.achievementId).then(response => {
-            res.send(response);
-        })
-    } else {
-        res.send(false);
-    }
-}
-)
-
-app.post('/uploadImage', function (req, res) {
-
-    var rand = Math.floor(Math.random() * 1000);
-    var fileName;
-
-    const storage = multer.diskStorage({
-        destination: `${config.uploadDirectory}/${req.query.challengeId}`,
-        filename: function (req, file, cb) {
-            fileName = rand + file.originalname;
-            cb(null, fileName);
-        }
-    });
-
-    const upload = multer({
-        storage: storage,
-        limits: { fileSize: 1000000 },
-    }).single("file");
-
-    upload(req, res, err => {
-        if (!err) return res.send(fileName).end();
-    })
-}
-)
-
-
-app.get("/getAllChallenges", function (req, res) {
-    challengeDataFunctions.getAllChallenges().then(response => {
-        res.send(response);
-    })
-})
-
 app.get("/getUserChallenges", function (req, res) {
 
     userAccountFunctions.getUserChallenges(req.query.id).then(response => {
@@ -209,16 +120,7 @@ app.get("/getUserChallenges", function (req, res) {
     })
 })
 
-app.get("/updateChallengeData", function (req, res) {
-    if (req.query && req.query.challengeId) {
-        //note: this is a little different than other things, in that we're sending the entire req.query
-        challengeDataFunctions.updateChallengeData(req.query.challengeId, req.query).then(response => {
-            if (response) {
-                res.send(response);
-            }
-        })
-    }
-})
+
 
 app.get("/getUserChallengeData", function (req, res) {
 
@@ -230,41 +132,6 @@ app.get("/getUserChallengeData", function (req, res) {
 }
 )
 
-app.get("/getChallengeData", function (req, res) {
-    console.log("challenge data");
-    var origin = req.headers.origin;
-    if (req.headers.origin && req.headers.origin != undefined) {
-        if (allowedOrigins.indexOf(origin) > -1) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
-        }
-    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
-    if (req.query && req.query.challengeId) {
-        challengeDataFunctions.getChallengeData(req.query.challengeId).then(response => {
-            res.send(response);
-        })
-    }
-}
-)
-
-
-app.get("/verifytoken", function (req, res) {
-    var origin = req.headers.origin;
-    if (req.headers.origin && req.headers.origin != undefined) {
-        if (allowedOrigins.indexOf(origin) > -1) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
-        }
-    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
-    res.setHeader("Content-Type", "text/plain");
-
-    var token = req.query.token;
-    jwt.verify(token, config.tokenSecret, function (err, decoded) {
-        if (err) {
-            res.send("Invalid");
-        } else {
-            res.send("Valid");
-        }
-    });
-})
 
 app.get("/userdata", function (req, res) {
 
@@ -304,6 +171,136 @@ async function getUserData(id) {
     }
 
 }
+
+
+
+/* Challenge Stuff */
+
+
+app.post("/challenge", function (req, res) {
+
+    admin
+        .auth()
+        .verifyIdToken(req.body.authorization)
+        .then((decodedToken) => {
+            const uid = decodedToken.uid;
+            if (req.body.id == uid) {
+                console.log("hit it");
+                challengeDataFunctions.createNewChallenge(req.body.name, req.body.miles, req.body.id).then(response => {
+                    res.send(response);
+                });
+            } else {
+                console.log("token mismatch")
+            }
+        })
+        .catch((error) => {
+            // Handle error
+        });
+})
+
+
+
+app.get("/enrollUserInChallenge", function (req, res) {
+    if (req && req.query.challenge && req.query.user) {
+        challengeDataFunctions.enrollUserInChallenge(req.query.challenge, req.query.user).then(result => {
+            if (result) {
+                res.send(true);
+            } else {
+                res.send(false);
+            }
+        })
+    }
+})
+
+
+
+app.get("/submitNewAchievement", function (req, res) {
+    if (req && req.query && req.query.challengeId) {
+        challengeDataFunctions.addNewAchievement(req.query.challengeId, req.query).then(response => {
+            res.send(response);
+        })
+    } else {
+        res.send(false);
+    }
+}
+)
+
+
+app.get("/deleteAchievement", function (req, res) {
+    if (req && req.query && req.query.achievementId && req.query.challengeId) {
+        challengeDataFunctions.deleteAchievement(req.query.challengeId, req.query.achievementId).then(response => {
+            res.send(response);
+        })
+    } else {
+        res.send(false);
+    }
+}
+)
+
+
+app.post('/uploadImage', function (req, res) {
+
+    var rand = Math.floor(Math.random() * 1000);
+    var fileName;
+
+    const storage = multer.diskStorage({
+        destination: `${config.uploadDirectory}/${req.query.challengeId}`,
+        filename: function (req, file, cb) {
+            fileName = rand + file.originalname;
+            cb(null, fileName);
+        }
+    });
+
+    const upload = multer({
+        storage: storage,
+        limits: { fileSize: 1000000 },
+    }).single("file");
+
+    upload(req, res, err => {
+        if (!err) return res.send(fileName).end();
+    })
+}
+)
+
+
+
+app.get("/getAllChallenges", function (req, res) {
+    challengeDataFunctions.getAllChallenges().then(response => {
+        res.send(response);
+    })
+})
+
+
+
+app.get("/updateChallengeData", function (req, res) {
+    if (req.query && req.query.challengeId) {
+        //note: this is a little different than other things, in that we're sending the entire req.query
+        challengeDataFunctions.updateChallengeData(req.query.challengeId, req.query).then(response => {
+            if (response) {
+                res.send(response);
+            }
+        })
+    }
+})
+
+
+
+app.get("/getChallengeData", function (req, res) {
+    console.log("challenge data");
+    var origin = req.headers.origin;
+    if (req.headers.origin && req.headers.origin != undefined) {
+        if (allowedOrigins.indexOf(origin) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    } else { res.setHeader('Access-Control-Allow-Origin', 'https://trexa.me'); }
+    if (req.query && req.query.challengeId) {
+        challengeDataFunctions.getChallengeData(req.query.challengeId).then(response => {
+            res.send(response);
+        })
+    }
+}
+)
+
 
 
 

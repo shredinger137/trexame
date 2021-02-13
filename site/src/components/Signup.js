@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { useFirebaseApp } from 'reactfire';
+import { useFirebaseApp, useAuth } from 'reactfire';
 import 'firebase/auth'
 import axios from 'axios';
 import { config } from "../config.js";
 import {Link} from "react-router-dom";
+import googleLogo from '../images/btn_google_signin_dark_normal_web.png';
+import firebase from 'firebase/app';
+
+const provider = new firebase.auth.GoogleAuthProvider();
 
 const Signup = () => {
+
+  const reactAuth = useAuth();
+
+  const signInWithGoogle = async () => {
+    await reactAuth.signInWithPopup(provider);
+  };
 
   const firebase = useFirebaseApp();
 
@@ -101,6 +111,7 @@ const Signup = () => {
                   onChange={handleChange}
                 />
               </div>
+              <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} />
               <div style={{ marginBottom: ".25rem" }} class="center">
                 <button
                   className="w-75 submit-button-round-blue"
@@ -110,6 +121,7 @@ const Signup = () => {
               </button>
               </div>
               <hr class="mb-6 border-t" />
+
               <div id="alertText"></div>
               <div class="center">
                 <Link to="/login"><span class="link-text-secondary">Already have an account? Log in.</span></Link>

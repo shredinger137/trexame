@@ -17,12 +17,12 @@ import { useAuth, useUser } from 'reactfire';
 
 
 
-var Header = (props) => {
+var Header = () => {
 
     const { data: user } = useUser();
    
     function logOut() {
-        firebase.auth().signOut();
+        firebase.auth().signOut().then(window.location.href = "/");
       }
 
     return (
@@ -46,7 +46,7 @@ var Header = (props) => {
                         </AuthCheck>
 
                         
-                        {props.isLoggedIn ?
+                        {user ?
                             <li className="signUpButton roboto"><span onClick={logOut} style={{ cursor: "pointer" }} className="roboto">Log Out</span></li>
                             :
                             <li className="signUpButton roboto"><Link to="/signup">Sign Up</Link></li>

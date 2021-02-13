@@ -62,6 +62,7 @@ class NewChallenge extends React.Component {
             <label> <span>Target Miles:{" "}</span>
               <input type="number" id="miles"></input>
             </label>
+            <br />
             <label> <span>Open Enrollment?{" "}</span>
               <input type="checkbox" id="openEnrollment"></input>
             </label>
