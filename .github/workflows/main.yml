@@ -20,23 +20,23 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-   
-    - run: npm install
-    - working-directory: site
+    - name: Install site dependencies
+      run: npm install
+      working-directory: site
 
+    - name: Build frontend
+      run: npm run build --if-present
+      working-directory: site
 
-    - run: npm run build --if-present
-    - working-directory: site
+    - name: Copy frontend
+      run: cp -R ./* /var/www/trexame/
+      working-directory: site
 
+    - name: Install API dependencies
+      run: npm install
+      working-directory: api
 
-    - run: cp -R ./* /var/www/trexame/
-    - working-directory: site
-
-
-    - run: npm install
-    - working-directory: api
-
-
-    - run: cp -R ./* /repos/trexame/api/
-    - working-directory: api
+    - name: Deploy API
+      run: cp -R ./* /repos/trexame/api/
+      working-directory: api
     
