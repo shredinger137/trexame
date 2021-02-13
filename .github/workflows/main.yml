@@ -12,22 +12,5 @@ jobs:
     steps:
 
     - name: Install site dependencies
-      run: npm install
+      run: ls
       working-directory: site
-
-    - name: Build frontend
-      run: npm run build --if-present
-      working-directory: site
-
-    - name: Copy frontend
-      run: cp -R ./* /var/www/trexame/
-      working-directory: site
-
-    - name: Install API dependencies
-      run: npm install
-      working-directory: api
-
-    - name: Deploy API
-      run: cp -R ./* /repos/trexame/api/
-      working-directory: api
-    
