@@ -12,5 +12,6 @@ jobs:
     steps:
 
     - name: Install site dependencies
-      run: ls
+      working-directory: ./site
+      run: npm install
 
