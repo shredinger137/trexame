@@ -1,7 +1,7 @@
 var express = require("express");
 var app = express();
 var config = require("./config.js");
-//var cron = require("node-cron");
+var cron = require("node-cron");
 var MongoClient = require('mongodb').MongoClient, Server = require('mongodb').Server;
 var userAccountFunctions = require('./userAccount');
 var challengeDataFunctions = require('./challengeData');
@@ -48,13 +48,15 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
     connectedToDatabase = true;
     console.log("Connected to database " + config.globalDbName);
 
-    //things that happen on startup should happen here, after the database connects
+    generateStats();
+
+
 })
 
 
-//cron.schedule("* * * * *", () => {
-//this will be used for syncing, stats generation
-//});
+cron.schedule("0 * * * *", () => {
+    generateStats();
+});
 
 
 //*****************
@@ -62,6 +64,15 @@ MongoClient.connect('mongodb://localhost:27017/', { useUnifiedTopology: true, us
 //*****************
 
 /* User Stuff */
+
+app.get("/stats/:challengeId", function (req, res) {
+
+    challengeDataFunctions.getStats(req.params.id).then(result => {
+        res.send(result);
+    })
+
+
+})
 
 
 app.post("/login/:id", function (req, res) {
@@ -298,6 +309,95 @@ app.get("/getChallengeData", function (req, res) {
 }
 )
 
+
+
+/* Stats Generation */
+//Once this is setup right, you should consider pushing it a separate process so it isn't blocking anything
+
+
+
+function generateStats() {
+
+    var stats = {};
+    var total = 0;
+    var userTotal = 0;
+    var allUsersProgress = {}
+
+
+    //TODO: This is getting 0 for total progress.
+    //Problem is the async userAccountFunctions. I think total goes in there? 
+    //But then the write doesn't go there. So, the write happens before the data is received.
+
+    challengeDataFunctions.getAllChallenges().then(result => {
+        if (Symbol.iterator in Object(result)) {
+
+            for (var challenge of result) {
+                //We can now iterate over all challenges and generate stats.
+                //First: total number of participants
+
+                if (challenge.participants && Array.isArray(challenge.participants)) {
+                    stats["totalParticipants"] = challenge.participants.length;
+
+                    //go through users and get their total progress totals
+                    //add these to the 'leaderboard' object, which will be dealt with after
+                    //in other words, the object gets all progress of all users
+
+                    for (var user of challenge.participants) {
+                        userAccountFunctions.getUserChallengeData(user, challenge.challengeId).then(userProgress => {
+                            if (userProgress) {
+
+                                //error: not iteratble. So what is it?
+
+                                for (var date in userProgress) {
+                                    userTotal += userProgress[date]
+                                }
+
+                                console.log(userTotal)
+
+                                total += userTotal;
+                                allUsersProgress[user] = userTotal;
+
+                                userTotal = 0;
+
+                                stats["totalProgress"] = total;
+                                total = 0;
+
+
+                            }
+                        })
+                    }
+
+
+
+
+
+                }
+
+                //You'll have to work on the other ones here. Leaderboard first.
+
+
+                //write stats to challenge data
+                if (dbConnection) {
+                    try {
+                        dbConnection.collection("challenges").updateOne({ challengeId: challenge.challengeId }, { $set: { stats: stats } })
+                    }
+                    catch (err) {
+                        console.log(err)
+                    }
+
+                }
+
+                stats = {};
+
+
+            }
+
+
+
+        }
+
+    })
+}
 
 
 

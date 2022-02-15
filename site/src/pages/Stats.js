@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { config } from '../config';
 import axios from 'axios';
 
-//No. Make the challenge dashboard or whatever a larger component where stats and dashboard are views. Or maybe just try a link component?
+//In the next version, 'dashboard' should have a state for view and should update accordingly. Pass stats through that to keep the challenge. The top nav shouldn't change.
 
-//The a href bit requires too much reload.
 
 function Stats(props) {
+
+  useEffect(() => {
+    getMarathonId()
+  }, [])
 
   const [statsData, setStatsData] = useState({})
   const [marathonId, setMarathonId] = useState("")
@@ -20,6 +23,8 @@ function Stats(props) {
         //no conditional - doesn't have error handling
 
         setStatsData(response.data);
+        setMarathonId(params.get("challenge"))
+        console.log(response.data);
 
       })
 
@@ -28,10 +33,16 @@ function Stats(props) {
   }
 
   return (
-    <>
-      <h2>Challenge Name</h2>
-      <p>[Dashboard] [Stats] [Community]</p>
-    </>
+
+    <div className="App">
+      <h2>Stats</h2>
+      <p><a href={`/dashboard?challenge=${marathonId}`}>[Dashboard]</a> [Stats] [Community]</p>
+      <p>This needs work - create stats object and cron job, determine what goes here.</p>
+      <p>Total Users: {statsData.totalUsers}<br/>
+        Combined Distance: {statsData.combinedMiles}
+      </p>
+    </div>
+
   )
 
 }

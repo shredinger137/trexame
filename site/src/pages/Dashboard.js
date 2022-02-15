@@ -159,7 +159,7 @@ class Dashboard extends React.Component {
                         <div id="progressBar" style={{ width: this.state.progressTotalPercent + "%", maxWidth: "100%" }}>
                         </div>
                     </div>
-                    <div className="width-25 width-75-sm" style={{ margin: "0 auto", marginTop: "30px" }}>
+                     <div className="width-25 width-75-sm" style={{ margin: "0 auto", marginTop: "30px" }}>
                         <h4 style={{ marginBlockStart: 0, marginBlockEnd: 0, marginBottom: "5px" }}>New Entry</h4>
                         <form id="updateMilesForm" className="grid-2" onSubmit={this.handleAddMiles.bind(this)}>
                             <label className="form-label" htmlFor="addMiles" style={{ textAlign: "right", marginRight: "15px" }}>

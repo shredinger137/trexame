@@ -19,7 +19,6 @@ class Achievements extends React.Component {
 
     componentDidMount() {
         this.getAllBadges();
-        console.log(this.props);
     }
 
 
@@ -35,8 +34,6 @@ class Achievements extends React.Component {
 
         var list = this.props.achievements;
 
-        console.log(list);
-     
         if (list && Array.isArray(list) == true) {
             for (var badge of list) {
 

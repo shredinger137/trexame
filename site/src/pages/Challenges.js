@@ -84,12 +84,11 @@ class Challenges extends React.Component {
                 <span onClick={() => { this.setState({ showNewChallenge: true }) }}>New Challenge</span>
                 <br />
                 <div className="grid-3 grid-1-sm">
-                    <p>Owned Challenges:<br />
+                    <p>Owned Challenges:</p><br />
                         {this.state.ownedChallenges.map(challenge => (
-                            <div>
+                            <div key={challenge.challengeName}>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>
-                                    {challenge.challengeName} <a href={`/challenge-admin?challenge=${challenge.challengeId}`}>[Admin]</a>
-                                </a>
+                                    {challenge.challengeName}</a> <a href={`/challenge-admin?challenge=${challenge.challengeId}`}>[Admin]</a>
                             </div>
                         ))}
                         <br /><br />
@@ -102,7 +101,7 @@ class Challenges extends React.Component {
                             </div>
                         ))}
                         <br /><br />
-                        Available Challenges:</p> <br />
+                        <p>Available Challenges:</p> <br />
                         {this.state.notEnrolled.map(challenge => (
                             <div key={challenge.challengeName + "div"}>
                                 <a href={`/dashboard?challenge=${challenge.challengeId}`}>

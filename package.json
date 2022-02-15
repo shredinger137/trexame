@@ -1,0 +1,23 @@
+{
+  "name": "trexame",
+  "version": "1.0.0",
+  "description": "This app was designed for Resurrection Roller Derby's \"Skate the Bay\" marathon. It could potentially be repurposed for any other marathon. Works with React, Node.js, Express and MongoDB.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd api && nodemon app.js \" \"cd site && npm run start\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shredinger137/trexame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shredinger137/trexame/issues"
+  },
+  "homepage": "https://github.com/shredinger137/trexame#readme",
+  "dependencies": {
+    "concurrently": "^7.0.0"
+  }
+}

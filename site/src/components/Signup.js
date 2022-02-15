@@ -71,7 +71,7 @@ const Signup = () => {
             <h3 className="title center">Create Account</h3>
             <form className="signup-form" onSubmit={handleSubmit}>
               <div style={{ marginBottom: ".25rem" }}>
-                <label class="form-label" htmlFor="name">
+                <label className="form-label" htmlFor="name">
                   Name
               </label>
                 <input
@@ -111,8 +111,8 @@ const Signup = () => {
                   onChange={handleChange}
                 />
               </div>
-              <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} />
-              <div style={{ marginBottom: ".25rem" }} class="center">
+              <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} alt="Sign in with Google"/>
+              <div style={{ marginBottom: ".25rem" }} className="center">
                 <button
                   className="w-75 submit-button-round-blue"
                   type="submit"
@@ -120,14 +120,14 @@ const Signup = () => {
                   Sign Up
               </button>
               </div>
-              <hr class="mb-6 border-t" />
+              <hr className="mb-6 border-t" />
 
               <div id="alertText"></div>
-              <div class="center">
-                <Link to="/login"><span class="link-text-secondary">Already have an account? Log in.</span></Link>
+              <div className="center">
+                <Link to="/login"><span className="link-text-secondary">Already have an account? Log in.</span></Link>
               </div>
-              <div class="text-center">
-                <Link to="/resetpassword"><span class="link-text-secondary">Reset Password</span></Link>
+              <div className="text-center">
+                <Link to="/resetpassword"><span className="link-text-secondary">Reset Password</span></Link>
               </div>
             </form>
           </div>

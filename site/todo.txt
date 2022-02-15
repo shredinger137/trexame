@@ -1,0 +1,4 @@
+-Mobile menu / everything needs to fit
+-Stats page
+-Stats data
+-RESTful updates

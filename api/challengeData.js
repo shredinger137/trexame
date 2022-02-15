@@ -24,7 +24,28 @@ module.exports = {
     updateChallengeData: updateChallengeData,
     getAllChallenges: getAllChallenges,
     addNewAchievement: addNewAchievement,
-    deleteAchievement: deleteAchievement
+    deleteAchievement: deleteAchievement,
+    getStats: getStats
+}
+
+async function getStats(challengeId){
+
+    if (dbConnection) {
+        try {
+            var challengeData = await dbConnection.collection("stats").findOne({ challengeId: challengeId });
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+        if (challengeData) {
+            return challengeData;
+        } else {
+            return false;
+        }
+
+    } else {
+        return false;
+    }
 }
 
 
@@ -253,7 +274,7 @@ async function getAllChallenges() {
 
     if (dbConnection) {
         try {
-            var challengeData = await dbConnection.collection("challenges").find({}, {projection: {_id: 0, ownerId: 0, participants: 0}}).toArray();
+            var challengeData = await dbConnection.collection("challenges").find({}, {projection: {_id: 0}}).toArray();
         } catch (err) {
             console.log(err);
             return false;

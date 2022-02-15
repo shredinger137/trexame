@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import '../css/menu.css';
 import { AuthCheck } from 'reactfire';
-import {Link} from 'react-router-dom';
-import firebase from 'firebase'
-import { useAuth, useUser } from 'reactfire';
+import { Link } from 'react-router-dom';
+import 'firebase/auth'
+import { useUser } from 'reactfire';
+import firebase from 'firebase/app'
 
 
 /*
@@ -19,11 +20,26 @@ import { useAuth, useUser } from 'reactfire';
 
 var Header = () => {
 
+    const userLogoStyle = {
+        borderRadius: "50%",
+        width: "40px",
+        height: "40px",
+        marginTop: "8px",
+        backgroundColor: "#4F2937",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        top: "10px"
+    }
+
     const { data: user } = useUser();
-   
+
     function logOut() {
         firebase.auth().signOut().then(window.location.href = "/");
-      }
+    }
+
+
 
     return (
         <>
@@ -34,7 +50,9 @@ var Header = () => {
 
 
                     {user ?
-                        <span className="user lightText">{user.displayName}</span>
+                        <div style={userLogoStyle}>
+                            <p>{user.displayName.substr(0, 1)}</p>
+                        </div>
                         :
                         <Link to="/login" className="user roboto">Login</Link>
                     }
@@ -45,7 +63,7 @@ var Header = () => {
                             <li><Link to="/account">Account</Link></li>
                         </AuthCheck>
 
-                        
+
                         {user ?
                             <li className="signUpButton roboto"><span onClick={logOut} style={{ cursor: "pointer" }} className="roboto">Log Out</span></li>
                             :

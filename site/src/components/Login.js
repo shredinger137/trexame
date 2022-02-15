@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFirebaseApp, useAuth } from 'reactfire';
 
@@ -83,8 +83,7 @@ const LoginFirebase = () => {
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div className="width-25 w-50-md width-100-small" style={{ padding: "4px" }}>
           <h3 className="title center">Log In</h3>
-          <p>New update has totally revamped accounts. It has advantages, but if you'd made one before you'll have to do it again. 'Sign in with Google' does that. Challenges still exist- ask and we can set your new account as owner.</p>
-          <form className="signup-form" onSubmit={handleSubmit}>
+            <form className="signup-form" onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="form-label" htmlFor="email">
                 Email Address
@@ -98,7 +97,7 @@ const LoginFirebase = () => {
               <input type="password" placeholder="******************" name="password" onChange={handleChange} className="width-100 px-3 py-2 form-input-shadow" required /><br />
             </div>
             <div className="mb-6 text-center">
-              <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} />
+              <img src={googleLogo} style={{ maxWidth: "150px" }} onClick={signInWithGoogle} alt="Sign in with Google" />
               <button
                 className="w-75 submit-button-round-blue"
                 type="submit"
